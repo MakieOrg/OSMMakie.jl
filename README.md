@@ -40,7 +40,7 @@ display(fig)
 ## Contributions
 
 All contributions are welcome!
-- If you need some inspiration what to work on, have a look at the [TODO list](TODO.md).
+- If you need some inspiration what to work on, have a look at the [TODO lists](https://github.com/fbanning/OSMMakie.jl/projects).
 - If you have a vague idea about a feature and it's not already on the list, get in touch via the discussion section.
 - If you already know what you want to add/fix, please feel free to open a new issue.
 
