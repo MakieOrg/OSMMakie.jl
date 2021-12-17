@@ -17,7 +17,6 @@ function Makie.show_data(inspector::DataInspector,
     ms = plot.markersize[]
 
     cursor_pos = collect(plot[1][][idx].data[1], plot[1][][idx].data[2])
-    println("test")
     a._display_text[] = node2string(plot.parent.osm[], round.(Float64.(cursor_pos), digits = 7))
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* ms .- Vec2f(5), Vec2f(ms) .+ Vec2f(10))
     a._px_bbox_visible[] = true
