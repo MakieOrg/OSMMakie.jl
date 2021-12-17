@@ -17,7 +17,7 @@ function Makie.show_data(inspector::DataInspector,
     ms = plot.markersize[]
 
     cursor_pos = collect(plot[1][][idx].data[1], plot[1][][idx].data[2])
-    a._display_text[] = node2string(plot.parent.osm[], round.(Float64.(cursor_pos), digits = 7))
+    a._display_text[] = node2string(plot.parent.osm[], Float64.(cursor_pos))
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* ms .- Vec2f(5), Vec2f(ms) .+ Vec2f(10))
     a._px_bbox_visible[] = true
     a._bbox_visible[] = false
@@ -27,13 +27,8 @@ function Makie.show_data(inspector::DataInspector,
 end
 
 function node2string(osm::LightOSM.OSMGraph, cursor_pos::Vector{Float64})
-    i = only(indexin(cursor_pos, osm.node_coordinates))
-    if isnothing(i)
-        return ""
-    else
-        node = osm.nodes[i]
-        return node2string(node)
-    end
+    nn = nearest_node(osm, cursor_pos)[1][1][1]
+    return node2string(osm.nodes[nn])
 end
 
 function node2string(node::N) where {N<:LightOSM.Node}
