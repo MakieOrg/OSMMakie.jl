@@ -87,7 +87,7 @@ function label_streets(sorted_edges, n2i, ways)
                 end
                 [n2i[way.nodes[n1]], n2i[way.nodes[n2]]]
             end
-            i = indexin([node_indices], sorted_edges)[1]
+            i = only(indexin([node_indices], sorted_edges))
             labels[i] = way.tags["name"]
         end
     end
