@@ -2,15 +2,34 @@
 # Node defaults
 ##########################################################################################
 
-function set_node_defaults(osmplot, edge_width)
+function set_node_defaults(osmplot)
+    osm = osmplot.osm[]
+
     osmplot.osm_nlabels[] = get(osmplot.graphplotkwargs, :nlabels,
-        repr.(keys(osmplot.osm[].nodes))) # save labels to enable hide_nlabels functionality
+        repr.(keys(osm.nodes))) # save labels to enable hide_nlabels functionality
     node_color = :black
-    node_size = edge_width
-    nlabels = osmplot.hide_nlabels[] ? nothing : osm_nlabels
+    node_size = node_sizes(osm)
+    nlabels = show_nlabels(osmplot.hide_nlabels[], osmplot.osm_nlabels[])
     nlabels_textsize = 9
 
     return (; node_color, node_size, nlabels, nlabels_textsize)
+end
+
+function node_sizes(osm)
+    gv = vertices(osm.graph)
+    node_sizes = fill(1, length(gv))
+
+    for i in gv
+        n = osm.index_to_node[i]
+        w = osm.node_to_highway[n]
+        node_sizes[i] = length(w)
+    end
+
+    return node_sizes
+end
+
+function show_nlabels(hide_nlabels, osm_nlabels)
+    return hide_nlabels ? nothing : osm_nlabels
 end
 
 ##########################################################################################
@@ -18,23 +37,22 @@ end
 ##########################################################################################
 
 function set_edge_defaults(osmplot)
-    # some handy aliases
-    i2n = osmplot.osm[].index_to_node
-    n2i = osmplot.osm[].node_to_index
-    e2h = osmplot.osm[].edge_to_highway
-    ways = osmplot.osm[].highways
-
+    osm = osmplot.osm[]
     # sorted list of edges with node indices as identifier
     # need to use edges(::AbstractGraph) to preserve edge order
-    sorted_edges = collect([e.src, e.dst] for e in edges(osmplot.osm[].graph))
+    sorted_edges = collect([e.src, e.dst] for e in edges(osm.graph))
 
     osmplot.osm_elabels[] = get(osmplot.graphplotkwargs, :elabels,
-        label_streets(sorted_edges, n2i, ways)) # save labels to enable hide_elabels functionality
-    edge_color = color_streets(sorted_edges, i2n, e2h, ways)
-    edge_width = width_streets(sorted_edges, i2n, e2h, ways)
+        label_streets(sorted_edges, osm.node_to_index,
+            osm.highways)) # save labels to enable hide_elabels functionality
+    edge_color = color_streets(sorted_edges, osm.index_to_node,
+        osm.edge_to_highway, osm.highways)
+    edge_width = width_streets(sorted_edges, osm.index_to_node,
+        osm.edge_to_highway, osm.highways)
     elabels = osmplot.hide_elabels[] ? nothing : osmplot.osm_elabels[]
     elabels_textsize = 11
-    arrow_size = arrows_streets(sorted_edges, i2n, e2h, ways)
+    arrow_size = arrows_streets(sorted_edges, osm.index_to_node,
+        osm.edge_to_highway, osm.highways)
 
     return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
 end

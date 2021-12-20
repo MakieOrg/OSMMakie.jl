@@ -34,8 +34,8 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     node_pos = Point2.(reverse.(osmplot.osm[].node_coordinates))
 
     # OSMMakie defaults
+    node_defaults = set_node_defaults(osmplot)
     edge_defaults = set_edge_defaults(osmplot)
-    node_defaults = set_node_defaults(osmplot, edge_defaults.edge_width)
 
     # Create the graphplot
     graphplot!(osmplot, osmplot.osm[].graph;
