@@ -13,6 +13,7 @@ function Makie.show_data(inspector::DataInspector,
     Makie.update_tooltip_alignment!(inspector, proj_pos)
 
     nn = nearest_node(osm, collect(pos))[1][1][1]
+    # TODO tooltip works but doesn't update
     a._display_text[] = node2string(osm.nodes[nn])
     ms = source.markersize[][osm.node_to_index[nn]]
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* ms .- Vec2f(5), Vec2f(ms) .+ Vec2f(10))
@@ -34,6 +35,8 @@ function node2string(node::N) where {N<:LightOSM.Node}
 
     return nodestring
 end
+
+# TODO copy current node ID on click
 
 ##########################################################################################
 # Edge inspection on mouse hover
@@ -57,6 +60,7 @@ function Makie.show_data(inspector::DataInspector,
     # -> should somehow directly search for edge which goes through cursor pos
     nn = nearest_node(osm, collect(pos), 2)[1][1]
     way = osm.edge_to_highway[nn]
+    # TODO tooltip works but doesn't update
     a._display_text[] = edge2string(osm.highways[way])
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* lw .- Vec2f(5), Vec2f(lw) .+ Vec2f(10))
     a._px_bbox_visible[] = true
@@ -69,6 +73,7 @@ end
 function edge2string(edge::E) where {E<:LightOSM.Way}
     edgestring = "▶ $(nameof(E)) $(edge.id)\n"
 
+    # TODO maybe sensible to remove edge nodes vector from tooltip in the end
     edgestring *= "$(edge.nodes)\n"
 
     for (key, val) in pairs(edge.tags)
@@ -77,3 +82,5 @@ function edge2string(edge::E) where {E<:LightOSM.Way}
 
     return edgestring
 end
+
+# TODO copy current edge ID on click

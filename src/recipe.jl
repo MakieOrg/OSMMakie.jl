@@ -45,5 +45,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
         osmplot.graphplotkwargs...
     )
 
+    # TODO disable node/edge inspection if hide_nlabels/hide_elabels
+
     return osmplot
 end
