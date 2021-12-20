@@ -1,8 +1,3 @@
-function Makie.show_data(inspector::DataInspector,
-    plot::OSMPlot{<:Tuple{<:OSMGraph}}, idx, gp::GraphPlot)
-    return Makie.show_data(inspector, gp, idx)
-end
-
 ##########################################################################################
 # Node inspection on mouse hover
 ##########################################################################################
