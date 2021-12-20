@@ -49,7 +49,7 @@ function set_edge_defaults(osmplot)
         osm.edge_to_highway, osm.highways)
     edge_width = width_streets(sorted_edges, osm.index_to_node,
         osm.edge_to_highway, osm.highways)
-    elabels = osmplot.hide_elabels[] ? nothing : osmplot.osm_elabels[]
+    elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
     arrow_size = arrows_streets(sorted_edges, osm.index_to_node,
         osm.edge_to_highway, osm.highways)
@@ -111,6 +111,10 @@ function label_streets(sorted_edges, n2i, ways)
     end
 
     return labels
+end
+
+function show_elabels(hide_elabels, osm_elabels)
+    return hide_elabels ? nothing : osm_elabels
 end
 
 function arrows_streets(sorted_edges, i2n, e2h, ways)
