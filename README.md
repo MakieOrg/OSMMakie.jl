@@ -36,6 +36,9 @@ osm = graph_from_file("london_drive.json";
 fig, ax, plot = osmplot(osm)
 ax.aspect = DataAspect()
 display(fig)
+
+# enable node and edge inspection
+DataInspector(fig)
 ```
 
 ![London map]()
