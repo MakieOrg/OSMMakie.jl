@@ -22,14 +22,29 @@ osm_nlabels = nothing # used internally for hide_nlabels
 @recipe(OSMPlot, osm) do scene
     Attributes(
         graphplotkwargs = NamedTuple(),
-        hide_elabels = false,
+        hide_elabels = true,
         hide_nlabels = true,
         osm_elabels = nothing,
         osm_nlabels = nothing,
+        sorted_edges = [],
+        index_to_edge = Dict(),
     )
 end
 
 function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
+    # Need to make a PR to have an `index_to_way` dict in OSMGraph. For now we create
+    # a sorted list of edges (source and destination node ids) as well as a dict that maps
+    # edge index to its related way. We need to use edges(::AbstractGraph) to preserve edge order.
+    osm = osmplot.osm[]
+    osmplot.sorted_edges = collect([e.src, e.dst] for e in edges(osm.graph))
+    osmplot.index_to_way = Dict(
+        zip(1:osm.graph.ne,
+            (osm.highways[way] for way in
+             (osm.edge_to_highway[edge] for edge in
+              ([osm.index_to_node[s], osm.index_to_node[d]] for (s, d) in osmplot.sorted_edges[])))
+        )
+    )
+
     # Node positions
     node_pos = Point2.(reverse.(osmplot.osm[].node_coordinates))
 
