@@ -46,21 +46,23 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     )
 
     # Node positions
+    # OSMGraph.node_coordinates is in lat/lon format. Reversing it provides lon/lat 
+    # which then creates standard north-oriented maps.
     node_pos = Point2.(reverse.(osmplot.osm[].node_coordinates))
 
-    # OSMMakie defaults
+    # OSMMakie defaults (see defaults.jl for details)
     node_defaults = set_node_defaults(osmplot)
     edge_defaults = set_edge_defaults(osmplot)
 
     # Create the graphplot
-    graphplot!(osmplot, osmplot.osm[].graph;
+    # User-provided graphplotkwargs will overwrite defaults
         layout = _ -> node_pos,
         node_defaults...,
         edge_defaults...,
         osmplot.graphplotkwargs...
     )
 
-    # TODO disable node/edge inspection if hide_nlabels/hide_elabels
+    # TODO add kwargs to toggle node/edge inspection
 
     return osmplot
 end
