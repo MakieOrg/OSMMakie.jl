@@ -38,54 +38,44 @@ end
 
 function set_edge_defaults(osmplot)
     osm = osmplot.osm[]
-    # sorted list of edges with node indices as identifier
-    # need to use edges(::AbstractGraph) to preserve edge order
-    sorted_edges = collect([e.src, e.dst] for e in edges(osm.graph))
 
     osmplot.osm_elabels[] = get(osmplot.graphplotkwargs, :elabels,
-        label_streets(sorted_edges, osm.node_to_index,
+        label_streets(osmplot.sorted_edges[], osm.node_to_index,
             osm.highways)) # save labels to enable hide_elabels functionality
-    edge_color = color_streets(sorted_edges, osm.index_to_node,
-        osm.edge_to_highway, osm.highways)
-    edge_width = width_streets(sorted_edges, osm.index_to_node,
-        osm.edge_to_highway, osm.highways)
+    osmplot.osm_edge_colors[] = color_streets(osmplot.index_to_way[])
+    edge_color = osmplot.osm_edge_colors[]
+    edge_width = width_streets(osmplot.index_to_way[])
     elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
-    arrow_size = arrows_streets(sorted_edges, osm.index_to_node,
+    arrow_size = arrows_streets(osmplot.sorted_edges[], osm.index_to_node,
         osm.edge_to_highway, osm.highways)
 
     return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
 end
 
-function color_streets(sorted_edges, i2n, e2h, ways)
-    # preallocate list with length = edges
-    color_list = fill(:black, length(sorted_edges))
+function color_streets(i2w)
+    colors = fill(:black, length(i2w))
 
-    for i in eachindex(sorted_edges)
-        edge_nodes = [i2n[sorted_edges[i][1]], i2n[sorted_edges[i][2]]]
-        way = e2h[edge_nodes]
-        if ways[way].tags["maxspeed"] <= 30
-            color_list[i] = :grey
+    for (index, way) in pairs(i2w)
+        if way.tags["maxspeed"] <= 30
+            colors[index] = :grey
         end
     end
 
-    return color_list
+    return colors
 end
 
-function width_streets(sorted_edges, i2n, e2h, ways)
-    widths = fill(0, length(sorted_edges))
+function width_streets(i2w)
+    widths = fill(0, length(i2w))
 
-    for i in eachindex(sorted_edges)
-        edge_nodes = [i2n[sorted_edges[i][1]], i2n[sorted_edges[i][2]]]
-        way = e2h[edge_nodes]
-        widths[i] = ways[way].tags["lanes"]
+    for (index, way) in pairs(i2w)
+        widths[index] = way.tags["lanes"]
     end
 
     return widths
 end
 
 function label_streets(sorted_edges, n2i, ways)
-    # preallocate list of empty strings with length = edges
     labels = fill("", length(sorted_edges))
 
     # replace edge labels but try to avoid repetitions
