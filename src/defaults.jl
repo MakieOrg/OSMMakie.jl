@@ -17,15 +17,15 @@ end
 
 function node_sizes(osm)
     gv = vertices(osm.graph)
-    node_sizes = fill(1, length(gv))
+    sizes = fill(1, length(gv))
 
     for i in gv
         n = osm.index_to_node[i]
         w = osm.node_to_highway[n]
-        node_sizes[i] = length(w)
+        sizes[i] = length(w)
     end
 
-    return node_sizes
+    return sizes
 end
 
 function show_nlabels(hide_nlabels, osm_nlabels)
