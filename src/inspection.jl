@@ -12,25 +12,30 @@ function Makie.show_data(inspector::DataInspector,
     proj_pos = Makie.shift_project(scene, plot, to_ndim(Point3f, pos, 0))
     Makie.update_tooltip_alignment!(inspector, proj_pos)
 
-    nn = nearest_node(osm, collect(pos))[1][1][1]
-    # TODO tooltip works but doesn't update
-    a._display_text[] = node2string(osm.nodes[nn])
-    ms = source.markersize[][osm.node_to_index[nn]]
+    node = osm.nodes[osm.index_to_node[idx]]
+    a._display_text[] = node2string(node)
+    ms = source.markersize[][idx]
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* ms .- Vec2f(5), Vec2f(ms) .+ Vec2f(10))
     a._px_bbox_visible[] = true
     a._bbox_visible[] = false
     a._visible[] = true
+    a.range = 1
+    a.textsize = 13
 
     return true
 end
 
 function node2string(node::N) where {N<:LightOSM.Node}
-    nodestring = "▶ $(nameof(N)) $(node.id)\n"
-
-    nodestring *= "$(node.location)"
-
+    nodestring = """
+        ▶ $(nameof(N)) $(node.id)
+        Location:
+            Lat: $(node.location.lat)
+            Lon: $(node.location.lon)
+            Alt: $(node.location.alt)
+        Tags:
+        """
     for (key, val) in pairs(node.tags)
-        nodestring *= "$(key): $(val)\n"
+        nodestring *= "    $(key): $(val)\n"
     end
 
     return nodestring
@@ -56,31 +61,35 @@ function Makie.show_data(inspector::DataInspector,
     proj_pos = Makie.shift_project(scene, plot, to_ndim(Point3f, pos, 0))
     Makie.update_tooltip_alignment!(inspector, proj_pos)
 
-    # TODO nearest_node may pick wrong nodes because it takes the two nearest to cursor pos
-    # -> should somehow directly search for edge which goes through cursor pos
-    nn = nearest_node(osm, collect(pos), 2)[1][1]
-    way = osm.edge_to_highway[nn]
-    # TODO tooltip works but doesn't update
-    a._display_text[] = edge2string(osm.highways[way])
+    # Without plot.index_to_way:
+    # i1, i2 = plot.sorted_edges[][idx÷2]
+    # n1, n2 = osm.index_to_node[i1], osm.index_to_node[i2]
+    # way = osm.edge_to_highway[[n1, n2]]
+
+    # With plot.index_to_way:
+    way = plot.index_to_way[][idx÷2]
+
+    a._display_text[] = edge2string(way)
     a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* lw .- Vec2f(5), Vec2f(lw) .+ Vec2f(10))
     a._px_bbox_visible[] = true
     a._bbox_visible[] = false
     a._visible[] = true
+    a.range = 1
+    a.textsize = 13
 
     return true
 end
 
 function edge2string(edge::E) where {E<:LightOSM.Way}
-    edgestring = "▶ $(nameof(E)) $(edge.id)\n"
-
-    # TODO maybe sensible to remove edge nodes vector from tooltip in the end
-    edgestring *= "$(edge.nodes)\n"
-
-    for (key, val) in pairs(edge.tags)
-        edgestring *= "$(key): $(val)\n"
+    edgestring = """
+        ▶ $(nameof(E)) $(edge.id)
+        Name: $(edge.tags["name"])
+        Tags:
+        """
+    for (key, val) in pairs(sort(edge.tags))
+        key == "name" && continue
+        edgestring *= "    $(key): $(val)\n"
     end
 
     return edgestring
 end
-
-# TODO copy current edge ID on click
