@@ -56,6 +56,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
 
     # Create the graphplot
     # User-provided graphplotkwargs will overwrite defaults
+    plot = graphplot!(osmplot, osmplot.osm[].graph;
         layout = _ -> node_pos,
         node_defaults...,
         edge_defaults...,
@@ -63,6 +64,9 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     )
 
     # TODO add kwargs to toggle node/edge inspection
+
+    # Disable inspection for one-way arrows
+    plot.plots[2].inspectable[] = false
 
     return osmplot
 end
