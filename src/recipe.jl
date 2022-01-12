@@ -38,7 +38,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     osm = osmplot.osm[]
     osmplot.sorted_edges = collect([e.src, e.dst] for e in edges(osm.graph))
     osmplot.index_to_way = Dict(
-        zip(1:osm.graph.ne,
+        zip(1:Graphs.ne(osm.graph),
             (osm.highways[way] for way in
              (osm.edge_to_highway[edge] for edge in
               ([osm.index_to_node[s], osm.index_to_node[d]] for (s, d) in osmplot.sorted_edges[])))
