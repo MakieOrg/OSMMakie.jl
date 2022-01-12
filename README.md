@@ -36,12 +36,30 @@ osm = graph_from_file("london_drive.json";
 fig, ax, plot = osmplot(osm)
 ax.aspect = DataAspect()
 display(fig)
+```
 
-# enable node and edge inspection
+Output:
+
+![London map](https://github.com/fbanning/OSMMakie-assets/blob/master/London.png)
+
+To enable edge inspection:
+
+```julia
 DataInspector(fig)
 ```
 
-![London map]()
+Output:
+
+![London map with inspection enabled](https://github.com/fbanning/OSMMakie-assets/blob/master/London_inspection.png)
+
+Markersize of nodes is set to zero by default, preventing inspection.
+A `node_size` has to be provided to enable node inspection.
+
+```julia
+fig, ax, plot = osmplot(osm; graphplotkwargs=(; node_size = 1))
+ax.aspect = DataAspect()
+DataInspector(fig)
+```
 
 ## Contributions
 
