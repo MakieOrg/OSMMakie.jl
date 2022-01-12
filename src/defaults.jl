@@ -42,7 +42,8 @@ function set_edge_defaults(osmplot)
     osmplot.osm_elabels[] = get(osmplot.graphplotkwargs, :elabels,
         label_streets(osmplot.sorted_edges[], osm.node_to_index,
             osm.highways)) # save labels to enable hide_elabels functionality
-    edge_color = color_streets(osmplot.index_to_way[])
+    osmplot.osm_edge_colors[] = color_streets(osmplot.index_to_way[])
+    edge_color = osmplot.osm_edge_colors[]
     edge_width = width_streets(osmplot.index_to_way[])
     elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
