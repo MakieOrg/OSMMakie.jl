@@ -83,7 +83,7 @@ end
 function edge2string(edge::E) where {E<:LightOSM.Way}
     edgestring = """
         ▶ $(nameof(E)) $(edge.id)
-        Name: $(edge.tags["name"])
+        $(haskey(edge.tags, "name") ? "Name: $(edge.tags["name"])" : "" )
         Tags:
         """
     for (key, val) in pairs(sort(edge.tags))
