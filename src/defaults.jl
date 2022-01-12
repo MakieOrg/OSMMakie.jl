@@ -8,14 +8,14 @@ function set_node_defaults(osmplot)
     osmplot.osm_nlabels[] = get(osmplot.graphplotkwargs, :nlabels,
         repr.(keys(osm.nodes))) # save labels to enable hide_nlabels functionality
     node_color = :black
-    node_size = node_sizes(osm)
+    node_size = 0
     nlabels = show_nlabels(osmplot.hide_nlabels[], osmplot.osm_nlabels[])
     nlabels_textsize = 9
 
     return (; node_color, node_size, nlabels, nlabels_textsize)
 end
 
-function node_sizes(osm)
+function node_sizes(osm) # currently unused but good for testing purposes
     gv = vertices(osm.graph)
     sizes = fill(1, length(gv))
 
