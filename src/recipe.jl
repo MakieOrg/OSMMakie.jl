@@ -28,6 +28,7 @@ osm_nlabels = nothing # used internally for hide_nlabels
         osm_nlabels = nothing,
         sorted_edges = [],
         index_to_edge = Dict(),
+        osm_edge_colors = nothing,
     )
 end
 
