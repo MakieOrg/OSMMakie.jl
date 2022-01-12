@@ -20,7 +20,7 @@ function Makie.show_data(inspector::DataInspector,
     a._bbox_visible[] = false
     a._visible[] = true
     a.range = 1
-    a.textsize = 13
+    a.textsize = 16
 
     return true
 end
@@ -75,7 +75,7 @@ function Makie.show_data(inspector::DataInspector,
     a._bbox_visible[] = false
     a._visible[] = true
     a.range = 1
-    a.textsize = 13
+    a.textsize = 16
 
     return true
 end
