@@ -160,11 +160,12 @@ function set_edge_defaults(osmplot)
 end
 
 function color_streets(i2w)
-    colors = fill(:black, length(i2w))
+    colors = fill(colorant"#444", length(i2w))
 
     for (index, way) in pairs(i2w)
-        if way.tags["maxspeed"] <= 30
-            colors[index] = :grey
+        waytype = get(way.tags, "highway", nothing)
+        if waytype !== nothing && haskey(WAYTYPECOLORS, waytype)
+            colors[index] = WAYTYPECOLORS[waytype]
         end
     end
 
@@ -172,10 +173,14 @@ function color_streets(i2w)
 end
 
 function width_streets(i2w)
-    widths = fill(0, length(i2w))
+    widths = fill(1, length(i2w))
 
     for (index, way) in pairs(i2w)
-        widths[index] = way.tags["lanes"]
+        widths[index] = get(way.tags, "lanes", 1)
+        waytype = get(way.tags, "highway", nothing)
+        if waytype !== nothing && haskey(WAYTYPEWIDTHS, waytype)
+            widths[index] *= WAYTYPEWIDTHS[waytype]
+        end
     end
 
     return widths
