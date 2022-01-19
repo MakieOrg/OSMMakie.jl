@@ -116,7 +116,7 @@ function arrows_streets(i2w)
 
     for (index, way) in pairs(i2w)
         if get(way.tags, "oneway", false)
-            markersizes[index] = BASEWIDTH ÷ 3
+            markersizes[index] = BASEWIDTH ÷ 2
         end
     end
 
