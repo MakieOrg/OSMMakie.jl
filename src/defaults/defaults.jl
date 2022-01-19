@@ -46,11 +46,12 @@ function set_edge_defaults(osmplot)
             osm.highways)) # save labels to enable hide_elabels functionality
     edge_color = color_streets(osmplot.index_to_way[])
     edge_width = width_streets(osmplot.index_to_way[])
+    edge_attr = (; linestyle = style_streets(osmplot.index_to_way[]))
     elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
     arrow_size = arrows_streets(osmplot.index_to_way[])
 
-    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
+    return (; edge_color, edge_width, edge_attr, elabels, elabels_textsize, arrow_size)
 end
 
 function color_streets(i2w)
@@ -77,6 +78,19 @@ function width_streets(i2w)
     end
 
     return widths
+end
+
+function style_streets(i2w)
+    styles = fill(:solid, length(i2w))
+
+    for (index, way) in pairs(i2w)
+        waytype = get(way.tags, "highway", :solid)
+        if waytype !== :solid && haskey(WAYTYPESTYLES, waytype)
+            styles[index] = WAYTYPESTYLES[waytype]
+        end
+    end
+
+    return styles
 end
 
 function label_streets(sorted_edges, n2i, ways)
