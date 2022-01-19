@@ -32,10 +32,11 @@ osm_nlabels = nothing # used internally for hide_nlabels
 end
 
 function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
+    osm = osmplot.osm[]
+
     # Need to make a PR to have an `index_to_way` dict in OSMGraph. For now we create
     # a sorted list of edges (source and destination node ids) as well as a dict that maps
     # edge index to its related way. We need to use edges(::AbstractGraph) to preserve edge order.
-    osm = osmplot.osm[]
     osmplot.sorted_edges = collect([e.src, e.dst] for e in edges(osm.graph))
     osmplot.index_to_way = Dict(
         zip(1:Graphs.ne(osm.graph),
@@ -48,7 +49,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     # Node positions
     # OSMGraph.node_coordinates is in lat/lon format. Reversing it provides lon/lat 
     # which then creates standard north-oriented maps.
-    node_pos = Point2.(reverse.(osmplot.osm[].node_coordinates))
+    node_pos = Point2.(reverse.(osm.node_coordinates))
 
     # OSMMakie defaults (see defaults.jl for details)
     node_defaults = set_node_defaults(osmplot)
@@ -56,7 +57,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
 
     # Create the graphplot
     # User-provided graphplotkwargs will overwrite defaults
-    plot = graphplot!(osmplot, osmplot.osm[].graph;
+    plot = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
         node_defaults...,
         edge_defaults...,

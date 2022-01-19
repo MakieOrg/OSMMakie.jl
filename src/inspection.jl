@@ -29,8 +29,8 @@ function node2string(node::N) where {N<:LightOSM.Node}
     nodestring = """
         ▶ $(nameof(N)) $(node.id)
         Location:
-            Lat: $(node.location.lat)
             Lon: $(node.location.lon)
+            Lat: $(node.location.lat)
             Alt: $(node.location.alt)
         Tags:
         """

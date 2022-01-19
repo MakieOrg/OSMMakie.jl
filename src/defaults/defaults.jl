@@ -1,3 +1,5 @@
+include("default_consts.jl")
+
 ##########################################################################################
 # Node defaults
 ##########################################################################################
@@ -46,18 +48,18 @@ function set_edge_defaults(osmplot)
     edge_width = width_streets(osmplot.index_to_way[])
     elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
-    arrow_size = arrows_streets(osmplot.sorted_edges[], osm.index_to_node,
-        osm.edge_to_highway, osm.highways)
+    arrow_size = arrows_streets(osmplot.index_to_way[])
 
     return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
 end
 
 function color_streets(i2w)
-    colors = fill(:black, length(i2w))
+    colors = fill(colorant"#444", length(i2w))
 
     for (index, way) in pairs(i2w)
-        if way.tags["maxspeed"] <= 30
-            colors[index] = :grey
+        waytype = get(way.tags, "highway", nothing)
+        if waytype !== nothing && haskey(WAYTYPECOLORS, waytype)
+            colors[index] = WAYTYPECOLORS[waytype]
         end
     end
 
@@ -65,10 +67,13 @@ function color_streets(i2w)
 end
 
 function width_streets(i2w)
-    widths = fill(0, length(i2w))
+    widths = fill(BASEWIDTH, length(i2w))
 
     for (index, way) in pairs(i2w)
-        widths[index] = way.tags["lanes"]
+        waytype = get(way.tags, "highway", nothing)
+        if waytype !== nothing && haskey(WAYTYPEWIDTHS, waytype)
+            widths[index] *= WAYTYPEWIDTHS[waytype]
+        end
     end
 
     return widths
@@ -106,14 +111,12 @@ function show_elabels(hide_elabels, osm_elabels)
     return hide_elabels ? nothing : osm_elabels
 end
 
-function arrows_streets(sorted_edges, i2n, e2h, ways)
-    markersizes = fill(0, length(sorted_edges))
+function arrows_streets(i2w)
+    markersizes = fill(0, length(i2w))
 
-    for i in eachindex(sorted_edges)
-        edge_nodes = [i2n[sorted_edges[i][1]], i2n[sorted_edges[i][2]]]
-        way = e2h[edge_nodes]
-        if ways[way].tags["oneway"]
-            markersizes[i] = floor(Int, (ways[way].tags["lanes"] + 3) * 1.3)
+    for (index, way) in pairs(i2w)
+        if get(way.tags, "oneway", false)
+            markersizes[index] = BASEWIDTH ÷ 2
         end
     end
 
