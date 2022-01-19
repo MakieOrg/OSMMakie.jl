@@ -2,34 +2,40 @@
 # Consts for edge defaults
 ##########################################################################################
 
+BASEWIDTH = 3
+
+# Currently the colours are a mix of the OSM standard style and the German OSM style.
+# They are modified to work with a white background because we don't have any buildings and
+# areas on the map. This specifically affects all roads which are white or light grey in 
+# OSM standard style, e.g. "residential" and "tertiary". #444 was chosen in these cases.
 WAYTYPECOLORS = Dict{String, Colorant}(
     # roads
     # TODO: roads should have thin outlines in darker colour
     #       currently impossible with linesegments, Makie feature request is open
-    "motorway" => colorant"#E892A2",
-    "trunk" => colorant"#FCC0AC",
-    "primary" => colorant"#FCD6A4",
-    "secondary" => colorant"#F7FABF",
-    "tertiary" => colorant"#444",
+    "motorway" => colorant"#EB7D54",
+    "trunk" => colorant"#E27272",
+    "primary" => colorant"#E892A2",
+    "secondary" => colorant"#FCD6A4",
+    "tertiary" => colorant"#F7FABF",
     "unclassified" => colorant"#444",
     "residential" => colorant"#444",
     # link roads
     # TODO: link roads should have thin outlines in darker colour
     #       currently impossible with linesegments, Makie feature request is open
-    "motorway_link" => colorant"#E892A2",
-    "trunk_link" => colorant"#FCC0AC",
-    "primary_link" => colorant"#FCD6A4",
-    "secondary_link" => colorant"#F7FABF",
-    "tertiary_link" => colorant"#444",
+    "motorway_link" => colorant"#EB7D54",
+    "trunk_link" => colorant"#E27272",
+    "primary_link" => colorant"#E892A2",
+    "secondary_link" => colorant"#FCD6A4",
+    "tertiary_link" => colorant"#F7FABF",
     # special road types
-    "living_street" => colorant"#EDEDED",
+    "living_street" => colorant"#444",
     "service" => colorant"#444",
-    "pedestrian" => colorant"#DDDDE9",
+    "pedestrian" => colorant"#939894",
     "track" => colorant"#AC8327",
     "bus_guideway" => colorant"#6666FF",
     "escape" => colorant"#444",
     "raceway" => colorant"#FFC0CA",
-    "road" => colorant"#DDDDDD",
+    "road" => colorant"#444",
     "busway" => colorant"#444",
     # path
     "footway" => colorant"#F49C8B",
