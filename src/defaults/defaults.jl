@@ -67,10 +67,9 @@ function color_streets(i2w)
 end
 
 function width_streets(i2w)
-    widths = fill(1, length(i2w))
+    widths = fill(BASEWIDTH, length(i2w))
 
     for (index, way) in pairs(i2w)
-        widths[index] = get(way.tags, "lanes", 1)
         waytype = get(way.tags, "highway", nothing)
         if waytype !== nothing && haskey(WAYTYPEWIDTHS, waytype)
             widths[index] *= WAYTYPEWIDTHS[waytype]
