@@ -49,8 +49,9 @@ function set_edge_defaults(osmplot)
     elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
     elabels_textsize = 11
     arrow_size = arrows_streets(osmplot.index_to_way[])
+    arrow_attr=(; color = colorant"#fff")
 
-    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
+    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size, arrow_attr)
 end
 
 function color_streets(i2w)
