@@ -8,9 +8,6 @@ However, users have full control over every aspect of the plot and can style the
 
 ## Usage example
 
-> The package is not yet registered and therefore impossible to add via `]add OSMMakie`. 
-> It is instead necessary to add it via the github link, i.e. `]add https://github.com/fbanning/OSMMakie.jl`.
-
 ```julia
 using LightOSM
 using OSMMakie
