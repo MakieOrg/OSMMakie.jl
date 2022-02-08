@@ -2,7 +2,7 @@
 # Consts for edge defaults
 ##########################################################################################
 
-BASEWIDTH = 2
+BASEWIDTH = 1
 
 # Currently the colours are a mix of the OSM standard style and the German OSM style.
 # They are modified to work with a white background because we don't have any buildings and
