@@ -21,13 +21,20 @@ osm_nlabels = nothing # used internally for hide_nlabels
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
+        # general    
         graphplotkwargs = NamedTuple(),
         hide_elabels = true,
         hide_nlabels = true,
+        
+        # inspection
+        inspect_nodes = false,
+        inspect_edges = true,
+
+        # internal
+        sorted_edges = [],
+        index_to_way = Dict(),
         osm_elabels = nothing,
         osm_nlabels = nothing,
-        sorted_edges = [],
-        index_to_edge = Dict(),
     )
 end
 
@@ -57,14 +64,17 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
 
     # Create the graphplot
     # User-provided graphplotkwargs will overwrite defaults
-    plot = graphplot!(osmplot, osm.graph;
+    gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
         node_defaults...,
         edge_defaults...,
         osmplot.graphplotkwargs...
     )
-
-    # TODO add kwargs to toggle node/edge inspection
+    
+    # Setup with inspectability
+    gp.plots[1].inspectable = osmplot.inspect_nodes
+    gp.plots[2].inspectable[] = false # Always disable inspection for one-way arrows
+    gp.plots[3].inspectable = osmplot.inspect_edges
 
     # Disable inspection for one-way arrows
     plot.plots[2].inspectable[] = false
