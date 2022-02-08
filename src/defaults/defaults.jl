@@ -122,3 +122,23 @@ function arrows_streets(i2w)
 
     return markersizes
 end
+
+##########################################################################################
+# Building defaults
+##########################################################################################
+
+function plot_buildings!(osmplot, buildings)
+    building_polys = fill(Point2f[], length(buildings));
+    
+    for (i, (id, b)) in enumerate(buildings)
+        for bp in b.polygons
+            building_polys[i] = begin
+                Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
+            end
+        end
+    end
+    
+    bp = poly!(osmplot, building_polys; color = BUILDINGSCOLORS)
+    
+    return bp
+end

@@ -116,3 +116,5 @@ WAYTYPESTYLES = Dict{String, Symbol}(
     # cycleway
     "cycleway" => :dot,
 )
+
+BUILDINGSCOLORS = colorant"#bbb"

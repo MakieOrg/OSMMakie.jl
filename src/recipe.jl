@@ -25,6 +25,7 @@ osm_nlabels = nothing # used internally for hide_nlabels
         graphplotkwargs = NamedTuple(),
         hide_elabels = true,
         hide_nlabels = true,
+        buildings = nothing,
         
         # inspection
         inspect_nodes = false,
@@ -76,8 +77,10 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     gp.plots[2].inspectable[] = false # Always disable inspection for one-way arrows
     gp.plots[3].inspectable = osmplot.inspect_edges
 
-    # Disable inspection for one-way arrows
-    plot.plots[2].inspectable[] = false
+    # If user provided buildings, plot them as polys
+    if !isnothing(osmplot.buildings[])
+        bp = @lift(plot_buildings!(osmplot, $(osmplot.buildings)))
+    end
 
     return osmplot
 end
