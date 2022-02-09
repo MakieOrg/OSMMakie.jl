@@ -5,19 +5,17 @@ include("default_consts.jl")
 ##########################################################################################
 
 function set_node_defaults(osmplot)
-    osm = osmplot.osm[]
+    gpk = osmplot.graphplotkwargs
 
-    osmplot.osm_nlabels[] = get(osmplot.graphplotkwargs, :nlabels,
-        repr.(keys(osm.nodes))) # save labels to enable hide_nlabels functionality
-    node_color = :black
-    node_size = 0
-    nlabels = show_nlabels(osmplot.hide_nlabels[], osmplot.osm_nlabels[])
-    nlabels_textsize = 9
+    node_color = @lift(get($gpk, :node_color, :black))
+    node_size = @lift(get($gpk, :node_size, 0))
+    nlabels = @lift(show_nlabels($(osmplot.hide_nlabels), osmplot.osm, $gpk))
+    nlabels_textsize = @lift(get($gpk, :nlabels_textsize, 9))
 
     return (; node_color, node_size, nlabels, nlabels_textsize)
 end
 
-function node_sizes(osm) # currently unused but good for testing purposes
+function size_nodes(osm) # currently unused but good for testing purposes
     gv = vertices(osm.graph)
     sizes = fill(1, length(gv))
 
@@ -30,8 +28,13 @@ function node_sizes(osm) # currently unused but good for testing purposes
     return sizes
 end
 
-function show_nlabels(hide_nlabels, osm_nlabels)
-    return hide_nlabels ? nothing : osm_nlabels
+function show_nlabels(hide_nlabels, osm, gpk)
+    if hide_nlabels[]
+        nlabels = nothing
+    else
+        nlabels = get(gpk, :nlabels, repr.(keys(osm[].nodes)))
+    end
+    return nlabels
 end
 
 ##########################################################################################
@@ -40,15 +43,17 @@ end
 
 function set_edge_defaults(osmplot)
     osm = osmplot.osm[]
+    gpk = osmplot.graphplotkwargs
+    i2w = osmplot.index_to_way[]
+    sorted_edges = osmplot.sorted_edges[]
+    n2i = osm.node_to_index
+    ways = osm.highways
 
-    osmplot.osm_elabels[] = get(osmplot.graphplotkwargs, :elabels,
-        label_streets(osmplot.sorted_edges[], osm.node_to_index,
-            osm.highways)) # save labels to enable hide_elabels functionality
-    edge_color = color_streets(osmplot.index_to_way[])
-    edge_width = width_streets(osmplot.index_to_way[])
-    elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
-    elabels_textsize = 11
-    arrow_size = arrows_streets(osmplot.index_to_way[])
+    edge_color = @lift(get($gpk, :edge_color, color_streets(i2w)))
+    edge_width = @lift(get($gpk, :edge_width, width_streets(i2w)))
+    elabels = @lift(show_elabels($(osmplot.hide_elabels), sorted_edges, n2i, ways, $gpk))
+    elabels_textsize = @lift(get($gpk, :elabels_textsize, 11))
+    arrow_size = arrows_streets(i2w)
 
     return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
 end
@@ -107,8 +112,13 @@ function label_streets(sorted_edges, n2i, ways)
     return labels
 end
 
-function show_elabels(hide_elabels, osm_elabels)
-    return hide_elabels ? nothing : osm_elabels
+function show_elabels(hide_elabels, sorted_edges, n2i, ways, gpk)
+    elabels = if hide_elabels[]
+        nothing
+    else
+        get(gpk, :elabels, label_streets(sorted_edges, n2i, ways))
+    end
+    return elabels
 end
 
 function arrows_streets(i2w)
