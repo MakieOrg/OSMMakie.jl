@@ -9,31 +9,36 @@ Define OSMPlot plotting function with some attribute defaults.
 
 *arguments*
 
-osm::OSMGraph # OSMGraph object from LightOSM package
+osm::LightOSM.OSMGraph
 
 *keyword arguments*
 
-graphplotkwargs = NamedTuple # kwargs to be passed on to graphplot recipe
-hide_elabels = false # show edge labels
-hide_nlabels = true # hide node labels
-osm_elabels = nothing # used internally for hide_elabels
-osm_nlabels = nothing # used internally for hide_nlabels
+`graphplotkwargs::NamedTuple = (
+        # node defaults
+        node_color = :black,
+        node_size = 0,
+        nlabels = nothing,
+        nlabels_textsize = 9,
+        # edge defaults
+        edge_color = nothing,
+        edge_size = nothing,
+        elabels = nothing,
+        elabels_textsize = 11,
+    )` : All kwargs are passed on to the graphplot recipe, therefore all kwargs that work
+    with graphplot will also work here. Extending the defaults or changing single kwargs 
+    can be done by merging them `graphplotkwargs = (; OSMMakie.GRAPHPLOTKWARGS..., kwargs...)`.
+    An empty NamedTuple fully disables the built-in defaults.
+`hide_elabels::Boolean = false` : Show or hide edge labels.
+`hide_nlabels::Boolean = true` : Show or hide node labels.
+`buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
+    are plotted if this is not nothing.
+`inspect_nodes::Boolean = false` : Enables/disables inspection of OpenStreetMap nodes.
+`inspect_edges::Boolean = true` : Enables/disables inspection of OpenStreetMap ways.
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
         # general    
-        graphplotkwargs = (
-            # node defaults
-            node_color = :black,
-            node_size = 0,
-            nlabels = nothing,
-            nlabels_textsize = 9,
-            # edge defaults
-            edge_color = nothing,
-            edge_size = nothing,
-            elabels = nothing,
-            elabels_textsize = 11,
-        ),
+        graphplotkwargs = GRAPHPLOTKWARGS,
         hide_elabels = true,
         hide_nlabels = true,
         buildings = nothing,
