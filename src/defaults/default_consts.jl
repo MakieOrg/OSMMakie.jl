@@ -2,6 +2,19 @@
 # Consts for edge defaults
 ##########################################################################################
 
+const GRAPHPLOTKWARGS = (
+    # node defaults
+    node_color = :black,
+    node_size = 0,
+    nlabels = nothing,
+    nlabels_textsize = 9,
+    # edge defaults
+    edge_color = nothing,
+    edge_size = nothing,
+    elabels = nothing,
+    elabels_textsize = 11,
+)
+
 BASEWIDTH = 1
 
 # Currently the colours are a mix of the OSM standard style and the German OSM style.
