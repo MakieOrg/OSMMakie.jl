@@ -34,8 +34,6 @@ osm_nlabels = nothing # used internally for hide_nlabels
         # internal
         sorted_edges = [],
         index_to_way = Dict(),
-        osm_elabels = nothing,
-        osm_nlabels = nothing,
     )
 end
 
@@ -67,9 +65,9 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     # User-provided graphplotkwargs will overwrite defaults
     gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
+        osmplot.graphplotkwargs...,
         node_defaults...,
-        edge_defaults...,
-        osmplot.graphplotkwargs...
+        edge_defaults...
     )
     
     # Setup with inspectability
