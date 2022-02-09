@@ -127,7 +127,7 @@ end
 # Building defaults
 ##########################################################################################
 
-function plot_buildings!(osmplot, buildings)
+function get_building_polys(buildings)
     building_polys = fill(Point2f[], length(buildings));
     
     for (i, (id, b)) in enumerate(buildings)
@@ -138,7 +138,5 @@ function plot_buildings!(osmplot, buildings)
         end
     end
     
-    bp = poly!(osmplot, building_polys; color = BUILDINGSCOLORS)
-    
-    return bp
+    return building_polys
 end
