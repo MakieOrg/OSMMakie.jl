@@ -22,7 +22,18 @@ osm_nlabels = nothing # used internally for hide_nlabels
 @recipe(OSMPlot, osm) do scene
     Attributes(
         # general    
-        graphplotkwargs = NamedTuple(),
+        graphplotkwargs = (
+            # node defaults
+            node_color = :black,
+            node_size = 0,
+            nlabels = nothing,
+            nlabels_textsize = 9,
+            # edge defaults
+            edge_color = nothing,
+            edge_size = nothing,
+            elabels = nothing,
+            elabels_textsize = 11,
+        ),
         hide_elabels = true,
         hide_nlabels = true,
         buildings = nothing,
