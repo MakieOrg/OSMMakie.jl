@@ -73,9 +73,9 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     )
     
     # Setup with inspectability
-    gp.plots[1].inspectable = osmplot.inspect_nodes
+    gp.plots[1].plots[1].inspectable = lift(osmplot.inspect_edges) do i; i; end
     gp.plots[2].inspectable[] = false # Always disable inspection for one-way arrows
-    gp.plots[3].inspectable = osmplot.inspect_edges
+    gp.plots[3].inspectable = lift(osmplot.inspect_nodes) do i; i; end
 
     # If user provided buildings, plot them as polys
     if !isnothing(osmplot.buildings[])
