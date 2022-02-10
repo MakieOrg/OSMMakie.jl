@@ -7,33 +7,23 @@ export OSMPlot, osmplot, osmplot!
 """
 Define OSMPlot plotting function with some attribute defaults.
 
-*arguments*
+## Arguments
 
-osm::LightOSM.OSMGraph
+`osm::LightOSM.OSMGraph`
 
-*keyword arguments*
+## Keyword arguments
 
-`graphplotkwargs::NamedTuple = (
-        # node defaults
-        node_color = :black,
-        node_size = 0,
-        nlabels = nothing,
-        nlabels_textsize = 9,
-        # edge defaults
-        edge_color = nothing,
-        edge_size = nothing,
-        elabels = nothing,
-        elabels_textsize = 11,
-    )` : All kwargs are passed on to the graphplot recipe, therefore all kwargs that work
-    with graphplot will also work here. Extending the defaults or changing single kwargs 
-    can be done by merging them `graphplotkwargs = (; OSMMakie.GRAPHPLOTKWARGS..., kwargs...)`.
-    An empty NamedTuple fully disables the built-in defaults.
-`hide_elabels::Boolean = false` : Show or hide edge labels.
-`hide_nlabels::Boolean = true` : Show or hide node labels.
+`graphplotkwargs::NamedTuple = (; )` : All kwargs are passed on to the graphplot recipe, 
+    therefore all kwargs that work with graphplot will also work here
+    (see [GraphMakie docs](https://juliaplots.org/GraphMakie.jl/stable/#The-graphplot-Recipe)
+    for reference).
+    Extending the defaults can be done by providing `graphplotkwargs = (; kwargs...)`.
+`hide_elabels::Bool = false` : Show or hide edge labels.
+`hide_nlabels::Bool = true` : Show or hide node labels.
 `buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
     are plotted if this is not nothing.
-`inspect_nodes::Boolean = false` : Enables/disables inspection of OpenStreetMap nodes.
-`inspect_edges::Boolean = true` : Enables/disables inspection of OpenStreetMap ways.
+`inspect_nodes::Bool = false` : Enables/disables inspection of OpenStreetMap nodes.
+`inspect_edges::Bool = true` : Enables/disables inspection of OpenStreetMap ways.
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
