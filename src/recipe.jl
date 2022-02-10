@@ -7,17 +7,23 @@ export OSMPlot, osmplot, osmplot!
 """
 Define OSMPlot plotting function with some attribute defaults.
 
-*arguments*
+## Arguments
 
-osm::OSMGraph # OSMGraph object from LightOSM package
+`osm::LightOSM.OSMGraph`
 
-*keyword arguments*
+## Keyword arguments
 
-graphplotkwargs = NamedTuple # kwargs to be passed on to graphplot recipe
-hide_elabels = false # show edge labels
-hide_nlabels = true # hide node labels
-osm_elabels = nothing # used internally for hide_elabels
-osm_nlabels = nothing # used internally for hide_nlabels
+`graphplotkwargs::NamedTuple = (; )` : All kwargs are passed on to the graphplot recipe, 
+    therefore all kwargs that work with graphplot will also work here
+    (see [GraphMakie docs](https://juliaplots.org/GraphMakie.jl/stable/#The-graphplot-Recipe)
+    for reference).
+    Extending the defaults can be done by providing `graphplotkwargs = (; kwargs...)`.
+`hide_elabels::Bool = false` : Show or hide edge labels.
+`hide_nlabels::Bool = true` : Show or hide node labels.
+`buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
+    are plotted if this is not nothing.
+`inspect_nodes::Bool = false` : Enables/disables inspection of OpenStreetMap nodes.
+`inspect_edges::Bool = true` : Enables/disables inspection of OpenStreetMap ways.
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
@@ -34,8 +40,6 @@ osm_nlabels = nothing # used internally for hide_nlabels
         # internal
         sorted_edges = [],
         index_to_way = Dict(),
-        osm_elabels = nothing,
-        osm_nlabels = nothing,
     )
 end
 
@@ -67,9 +71,9 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     # User-provided graphplotkwargs will overwrite defaults
     gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
+        osmplot.graphplotkwargs...,
         node_defaults...,
-        edge_defaults...,
-        osmplot.graphplotkwargs...
+        edge_defaults...
     )
     
     # Setup with inspectability
