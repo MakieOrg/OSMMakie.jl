@@ -20,6 +20,7 @@ Define OSMPlot plotting function with some attribute defaults.
 `hide_nlabels::Bool = true` : Show or hide node labels.
 `buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
     are plotted if this is not nothing.
+`buildingskwargs::NamedTuple = (; )` : All kwargs are passed on to `Makie.poly` and will
     overwrite the defaults provided by 
 `inspect_nodes::Bool = false` : Enables/disables inspection of OpenStreetMap nodes.
 `inspect_edges::Bool = true` : Enables/disables inspection of OpenStreetMap ways.
@@ -31,6 +32,7 @@ Define OSMPlot plotting function with some attribute defaults.
         hide_elabels = true,
         hide_nlabels = true,
         buildings = nothing,
+        buildingskwargs = NamedTuple(),
         
         # inspection
         inspect_nodes = false,
@@ -83,7 +85,8 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     # If user provided buildings, plot them as polys
     if !isnothing(osmplot.buildings[])
         building_polys = @lift(get_building_polys($(osmplot.buildings)))
-        bp = poly!(osmplot, building_polys; color = BUILDINGSCOLORS)
+        bp = poly!(osmplot, building_polys; 
+            color = BUILDINGSCOLORS, osmplot.buildingskwargs...)
         bp.plots[1].inspectable[] = false # Disable building inspection for now
     end
 
