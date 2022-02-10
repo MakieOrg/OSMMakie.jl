@@ -38,7 +38,7 @@ osm::LightOSM.OSMGraph
 @recipe(OSMPlot, osm) do scene
     Attributes(
         # general    
-        graphplotkwargs = GRAPHPLOTKWARGS,
+        graphplotkwargs = NamedTuple(),
         hide_elabels = true,
         hide_nlabels = true,
         buildings = nothing,
