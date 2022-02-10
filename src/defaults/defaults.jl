@@ -4,20 +4,42 @@ include("default_consts.jl")
 # Node defaults
 ##########################################################################################
 
+#=
 function set_node_defaults(osmplot)
-    osm = osmplot.osm[]
+    gpk = osmplot.graphplotkwargs
 
-    osmplot.osm_nlabels[] = get(osmplot.graphplotkwargs, :nlabels,
-        repr.(keys(osm.nodes))) # save labels to enable hide_nlabels functionality
-    node_color = :black
-    node_size = 0
-    nlabels = show_nlabels(osmplot.hide_nlabels[], osmplot.osm_nlabels[])
-    nlabels_textsize = 9
+    node_color = @lift(get($gpk, :node_color, :black))
+    node_size = @lift(get($gpk, :node_size, 0))
+    nlabels = @lift(show_nlabels($gpk, $(osmplot.hide_nlabels), osmplot.osm[]))
+    nlabels_textsize = @lift(get($gpk, :nlabels_textsize, 9))
+
+    return (; node_color, node_size, nlabels)
+end
+=#
+
+#=
+It would be nicer to just use the function above but NamedTuples are automatically converted
+to Attributes, which are not a subtype of AbstractObservable. Hence we cannot lift from 
+them. Finding a workaround to this would allow for better reactivity of the plot attributes.
+So far everything I've tried was unsuccessful. Maybe at some point I will be smarter or the 
+underlying system will have changed.
+
+Anyways, the following workaround has to suffice for now although it only results in 
+static plots. The user has to recreate the plots to reflect any changes of graphplotkwargs.
+=#
+
+function set_node_defaults(osmplot)
+    gpk = osmplot.graphplotkwargs
+
+    node_color = haskey(gpk, :node_color) ? gpk.node_color : :black
+    node_size = haskey(gpk, :node_size) ? gpk.node_size : 0
+    nlabels = @lift(show_nlabels(gpk, $(osmplot.hide_nlabels), osmplot.osm[]))
+    nlabels_textsize = haskey(gpk, :nlabels_textsize) ? gpk.nlabels_textsize : 9
 
     return (; node_color, node_size, nlabels, nlabels_textsize)
 end
 
-function node_sizes(osm) # currently unused but good for testing purposes
+function size_nodes(osm) # currently unused but good for testing purposes
     gv = vertices(osm.graph)
     sizes = fill(1, length(gv))
 
@@ -30,8 +52,14 @@ function node_sizes(osm) # currently unused but good for testing purposes
     return sizes
 end
 
-function show_nlabels(hide_nlabels, osm_nlabels)
-    return hide_nlabels ? nothing : osm_nlabels
+function show_nlabels(gpk, hide_nlabels, osm)
+    labels = if hide_nlabels
+        nothing
+    else
+        haskey(gpk, :nlabels) ? gpk.nlabels : repr.(keys(osm.nodes))
+    end
+
+    return labels
 end
 
 ##########################################################################################
@@ -40,43 +68,53 @@ end
 
 function set_edge_defaults(osmplot)
     osm = osmplot.osm[]
+    gpk = osmplot.graphplotkwargs
+    i2w = osmplot.index_to_way[]
+    sorted_edges = osmplot.sorted_edges[]
+    n2i = osm.node_to_index
+    ways = osm.highways
 
-    osmplot.osm_elabels[] = get(osmplot.graphplotkwargs, :elabels,
-        label_streets(osmplot.sorted_edges[], osm.node_to_index,
-            osm.highways)) # save labels to enable hide_elabels functionality
-    edge_color = color_streets(osmplot.index_to_way[])
-    edge_width = width_streets(osmplot.index_to_way[])
-    elabels = show_elabels(osmplot.hide_elabels[], osmplot.osm_elabels[])
-    elabels_textsize = 11
-    arrow_size = arrows_streets(osmplot.index_to_way[])
+    edge_color = color_streets(gpk, i2w)
+    edge_width = width_streets(gpk, i2w)
+    elabels = @lift(show_elabels(gpk, $(osmplot.hide_elabels), sorted_edges, n2i, ways))
+    elabels_textsize = haskey(gpk, :elabels_textsize) ? gpk.elabels_textsize : 11
+    arrow_size = arrows_streets(gpk, i2w)
 
     return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
 end
 
-function color_streets(i2w)
-    colors = fill(colorant"#444", length(i2w))
+function color_streets(gpk, i2w)
+    if haskey(gpk, :edge_color)
+        return gpk.edge_color
+    else
+        colors = fill(colorant"#444", length(i2w))
 
-    for (index, way) in pairs(i2w)
-        waytype = get(way.tags, "highway", nothing)
-        if waytype !== nothing && haskey(WAYTYPECOLORS, waytype)
-            colors[index] = WAYTYPECOLORS[waytype]
+        for (index, way) in pairs(i2w)
+            waytype = get(way.tags, "highway", nothing)
+            if !isnothing(waytype) && haskey(WAYTYPECOLORS, waytype)
+                colors[index] = WAYTYPECOLORS[waytype]
+            end
         end
-    end
 
-    return colors
+        return colors
+    end
 end
 
-function width_streets(i2w)
-    widths = fill(BASEWIDTH, length(i2w))
+function width_streets(gpk, i2w)
+    if haskey(gpk, :edge_width)
+        return gpk.edge_width
+    else
+        widths = fill(BASEWIDTH, length(i2w))
 
-    for (index, way) in pairs(i2w)
-        waytype = get(way.tags, "highway", nothing)
-        if waytype !== nothing && haskey(WAYTYPEWIDTHS, waytype)
-            widths[index] *= WAYTYPEWIDTHS[waytype]
+        for (index, way) in pairs(i2w)
+            waytype = get(way.tags, "highway", nothing)
+            if !isnothing(waytype) && haskey(WAYTYPEWIDTHS, waytype)
+                widths[index] *= WAYTYPEWIDTHS[waytype]
+            end
         end
-    end
 
-    return widths
+        return widths
+    end
 end
 
 function label_streets(sorted_edges, n2i, ways)
@@ -107,18 +145,45 @@ function label_streets(sorted_edges, n2i, ways)
     return labels
 end
 
-function show_elabels(hide_elabels, osm_elabels)
-    return hide_elabels ? nothing : osm_elabels
+function show_elabels(gpk, hide_elabels, sorted_edges, n2i, ways)
+    labels = if hide_elabels
+        nothing
+    else
+        haskey(gpk, :elabels) ? gpk.elabels : label_streets(sorted_edges, n2i, ways)
+    end
+    return labels
 end
 
-function arrows_streets(i2w)
-    markersizes = fill(0, length(i2w))
+function arrows_streets(gpk, i2w)
+    if haskey(gpk, :arrow_attr) && haskey(gpk, :arrow_size)
+        return gpk.arrow_attr.arrow_size
+    else
+        markersizes = fill(0, length(i2w))
 
-    for (index, way) in pairs(i2w)
-        if get(way.tags, "oneway", false)
-            markersizes[index] = BASEWIDTH ÷ 2
+        for (index, way) in pairs(i2w)
+            if get(way.tags, "oneway", false)
+                markersizes[index] = BASEWIDTH ÷ 2
+            end
+        end
+
+        return markersizes
+    end
+end
+
+##########################################################################################
+# Building defaults
+##########################################################################################
+
+function get_building_polys(buildings)
+    building_polys = fill(Point2f[], length(buildings));
+    
+    for (i, (id, b)) in enumerate(buildings)
+        for bp in b.polygons
+            building_polys[i] = begin
+                Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
+            end
         end
     end
-
-    return markersizes
+    
+    return building_polys
 end

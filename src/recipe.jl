@@ -7,27 +7,40 @@ export OSMPlot, osmplot, osmplot!
 """
 Define OSMPlot plotting function with some attribute defaults.
 
-*arguments*
+## Arguments
 
-osm::OSMGraph # OSMGraph object from LightOSM package
+`osm::LightOSM.OSMGraph`
 
-*keyword arguments*
+## Keyword arguments
 
-graphplotkwargs = NamedTuple # kwargs to be passed on to graphplot recipe
-hide_elabels = false # show edge labels
-hide_nlabels = true # hide node labels
-osm_elabels = nothing # used internally for hide_elabels
-osm_nlabels = nothing # used internally for hide_nlabels
+`graphplotkwargs::NamedTuple = (; )` : All kwargs are passed on to `GraphMakie.graphplot!`. 
+    All kwargs that work with graphplot will also work here (see [GraphMakie docs](https://juliaplots.org/GraphMakie.jl/stable/#The-graphplot-Recipe) for reference).
+    Extending the defaults can be done by providing `graphplotkwargs = (; kwargs...)`.
+`hide_elabels::Bool = false` : Show or hide edge labels.
+`hide_nlabels::Bool = true` : Show or hide node labels.
+`buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
+    are plotted if this is not nothing.
+`buildingskwargs::NamedTuple = (; )` : All kwargs are passed on to `Makie.poly` and will
+    overwrite the defaults provided by 
+`inspect_nodes::Bool = false` : Enables/disables inspection of OpenStreetMap nodes.
+`inspect_edges::Bool = true` : Enables/disables inspection of OpenStreetMap ways.
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
+        # general    
         graphplotkwargs = NamedTuple(),
         hide_elabels = true,
         hide_nlabels = true,
-        osm_elabels = nothing,
-        osm_nlabels = nothing,
+        buildings = nothing,
+        buildingskwargs = NamedTuple(),
+        
+        # inspection
+        inspect_nodes = false,
+        inspect_edges = true,
+
+        # internal
         sorted_edges = [],
-        index_to_edge = Dict(),
+        index_to_way = Dict(),
     )
 end
 
@@ -57,17 +70,25 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
 
     # Create the graphplot
     # User-provided graphplotkwargs will overwrite defaults
-    plot = graphplot!(osmplot, osm.graph;
+    gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
+        osmplot.graphplotkwargs...,
         node_defaults...,
-        edge_defaults...,
-        osmplot.graphplotkwargs...
+        edge_defaults...
     )
+    
+    # Setup with inspectability
+    gp.plots[1].plots[1].inspectable = lift(osmplot.inspect_edges) do i; i; end
+    gp.plots[2].inspectable[] = false # Always disable inspection for one-way arrows
+    gp.plots[3].inspectable = lift(osmplot.inspect_nodes) do i; i; end
 
-    # TODO add kwargs to toggle node/edge inspection
-
-    # Disable inspection for one-way arrows
-    plot.plots[2].inspectable[] = false
+    # If user provided buildings, plot them as polys
+    if !isnothing(osmplot.buildings[])
+        building_polys = @lift(get_building_polys($(osmplot.buildings)))
+        bp = poly!(osmplot, building_polys; 
+            color = BUILDINGSCOLORS, osmplot.buildingskwargs...)
+        bp.plots[1].inspectable[] = false # Disable building inspection for now
+    end
 
     return osmplot
 end

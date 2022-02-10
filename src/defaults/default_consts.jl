@@ -2,7 +2,7 @@
 # Consts for edge defaults
 ##########################################################################################
 
-BASEWIDTH = 2
+BASEWIDTH = 1
 
 # Currently the colours are a mix of the OSM standard style and the German OSM style.
 # They are modified to work with a white background because we don't have any buildings and
@@ -49,37 +49,37 @@ WAYTYPECOLORS = Dict{String, Colorant}(
 
 WAYTYPEWIDTHS = Dict{String, Float64}(
     # roads
-    "motorway" => 2.0,
-    "trunk" => 2.0,
-    "primary" => 2.0,
-    "secondary" => 2.0,
-    "tertiary" => 2.0,
-    "unclassified" => 1.0,
-    "residential" => 1.0,
+    "motorway" => 6.0,
+    "trunk" => 6.0,
+    "primary" => 6.0,
+    "secondary" => 6.0,
+    "tertiary" => 6.0,
+    "unclassified" => 3.0,
+    "residential" => 3.0,
     # link roads
-    "motorway_link" => 1.0,
-    "trunk_link" => 1.0,
-    "primary_link" => 1.0,
-    "secondary_link" => 1.0,
-    "tertiary_link" => 1.0,
+    "motorway_link" => 3.0,
+    "trunk_link" => 3.0,
+    "primary_link" => 3.0,
+    "secondary_link" => 3.0,
+    "tertiary_link" => 3.0,
     # special road types
-    "living_street" => 1.0,
-    "service" => 0.75,
-    "pedestrian" => 1.0,
-    "track" => 0.3,
-    "bus_guideway" => 0.5,
-    "escape" => 1.0,
-    "raceway" => 1.0,
-    "road" => 1.0,
-    "busway" => 1.0,
+    "living_street" => 3.0,
+    "service" => 3.0,
+    "pedestrian" => 3.0,
+    "track" => 1.0,
+    "bus_guideway" => 2.0,
+    "escape" => 3.0,
+    "raceway" => 3.0,
+    "road" => 3.0,
+    "busway" => 3.0,
     # path
-    "footway" => 0.3,
-    "bridleway" => 0.3,
-    "steps" => 0.5,
-    "corridor" => 0.3,
-    "path" => 0.3,
+    "footway" => 1.0,
+    "bridleway" => 1.0,
+    "steps" => 2.0,
+    "corridor" => 1.0,
+    "path" => 1.0,
     # cycleway
-    "cycleway" => 0.3,
+    "cycleway" => 1.0,
 )
 
 WAYTYPESTYLES = Dict{String, Symbol}(
@@ -116,3 +116,5 @@ WAYTYPESTYLES = Dict{String, Symbol}(
     # cycleway
     "cycleway" => :dot,
 )
+
+BUILDINGSCOLORS = colorant"#bbb"
