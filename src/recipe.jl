@@ -65,8 +65,16 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     node_pos = Point2.(reverse.(osm.node_coordinates))
 
     # OSMMakie defaults (see defaults.jl for details)
-    node_defaults = set_node_defaults(osmplot)
     edge_defaults = set_edge_defaults(osmplot)
+    node_defaults = set_node_defaults(osmplot, edge_defaults.edge_width, edge_defaults.edge_color)
+
+    # If user provided buildings, plot them as polys
+    if !isnothing(osmplot.buildings[])
+        building_polys = @lift(get_building_polys($(osmplot.buildings)))
+        bp = poly!(osmplot, building_polys; 
+            color = BUILDINGSCOLORS, osmplot.buildingskwargs...)
+        bp.inspectable[] = false # Disable building inspection for now
+    end
 
     # Create the graphplot
     # User-provided graphplotkwargs will overwrite defaults
@@ -77,18 +85,13 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
         edge_defaults...
     )
     
-    # Setup with inspectability
-    gp.plots[1].plots[1].inspectable = lift(osmplot.inspect_edges) do i; i; end
-    gp.plots[2].inspectable[] = false # Always disable inspection for one-way arrows
-    gp.plots[3].inspectable = lift(osmplot.inspect_nodes) do i; i; end
-
-    # If user provided buildings, plot them as polys
-    if !isnothing(osmplot.buildings[])
-        building_polys = @lift(get_building_polys($(osmplot.buildings)))
-        bp = poly!(osmplot, building_polys; 
-            color = BUILDINGSCOLORS, osmplot.buildingskwargs...)
-        bp.plots[1].inspectable[] = false # Disable building inspection for now
-    end
+    # Setup inspection on mouse hover
+    # Tracks inspect_edges for ways
+    gp.plots[1].plots[1].inspectable = lift(identity, osmplot.inspect_edges)
+    # Always disabled for one-way arrows
+    gp.plots[2].inspectable[] = false
+    # Tracks inspect_nodes for nodes
+    gp.plots[3].inspectable = lift(identity, osmplot.inspect_nodes)
 
     return osmplot
 end
