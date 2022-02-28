@@ -6,14 +6,15 @@ include("default_consts.jl")
 
 #=
 function set_node_defaults(osmplot)
+    osm = osmplot.osm[]
     gpk = osmplot.graphplotkwargs
 
-    node_color = @lift(get($gpk, :node_color, :black))
-    node_size = @lift(get($gpk, :node_size, 0))
-    nlabels = @lift(show_nlabels($gpk, $(osmplot.hide_nlabels), osmplot.osm[]))
-    nlabels_textsize = @lift(get($gpk, :nlabels_textsize, 9))
+    node_color = @lift(get($gpk, :node_color, :default))
+    node_size = @lift(get($gpk, :node_size, :default))
+    nlabels = @lift(show_nlabels($gpk, $(osmplot.hide_nlabels), osm))
+    nlabels_textsize = @lift(get($gpk, :nlabels_textsize, :default))
 
-    return (; node_color, node_size, nlabels)
+    return (; node_color, node_size, nlabels, nlabels_textsize)
 end
 =#
 
