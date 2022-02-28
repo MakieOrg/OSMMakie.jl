@@ -79,9 +79,12 @@ function set_edge_defaults(osmplot)
     edge_width = width_streets(gpk, i2w)
     elabels = @lift(show_elabels(gpk, $(osmplot.hide_elabels), sorted_edges, n2i, ways))
     elabels_textsize = haskey(gpk, :elabels_textsize) ? gpk.elabels_textsize : 11
-    arrow_size = arrows_streets(gpk, i2w)
+    arrow_attr = (;
+        markersize = arrows_streets(gpk, i2w, edge_width),
+        color = :white
+    )
 
-    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_size)
+    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_attr)
 end
 
 function color_streets(gpk, i2w)
@@ -155,15 +158,15 @@ function show_elabels(gpk, hide_elabels, sorted_edges, n2i, ways)
     return labels
 end
 
-function arrows_streets(gpk, i2w)
+function arrows_streets(gpk, i2w, edge_width)
     if haskey(gpk, :arrow_attr) && haskey(gpk, :arrow_size)
-        return gpk.arrow_attr.arrow_size
+        return gpk.arrow_attr.arrow_size[]
     else
         markersizes = fill(0, length(i2w))
 
         for (index, way) in pairs(i2w)
             if get(way.tags, "oneway", false)
-                markersizes[index] = BASEWIDTH ÷ 2
+                markersizes[index] = edge_width[index]
             end
         end
 
