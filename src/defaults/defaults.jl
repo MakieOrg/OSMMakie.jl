@@ -29,35 +29,77 @@ Anyways, the following workaround has to suffice for now although it only result
 static plots. The user has to recreate the plots to reflect any changes of graphplotkwargs.
 =#
 
-function set_node_defaults(osmplot)
+function set_node_defaults(osmplot, edge_width, edge_color)
+    osm = osmplot.osm[]
     gpk = osmplot.graphplotkwargs
+    sorted_edges = osmplot.sorted_edges[]
 
-    node_color = haskey(gpk, :node_color) ? gpk.node_color : :black
-    node_size = haskey(gpk, :node_size) ? gpk.node_size : 0
-    nlabels = @lift(show_nlabels(gpk, $(osmplot.hide_nlabels), osmplot.osm[]))
+    node_size, maxs = size_nodes(gpk, osm, sorted_edges, edge_width)
+    node_color = color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
+    nlabels = @lift(show_nlabels(gpk, $(osmplot.hide_nlabels), osm))
     nlabels_textsize = haskey(gpk, :nlabels_textsize) ? gpk.nlabels_textsize : 9
 
     return (; node_color, node_size, nlabels, nlabels_textsize)
 end
 
-function size_nodes(osm) # currently unused but good for testing purposes
-    gv = vertices(osm.graph)
-    sizes = fill(1, length(gv))
-
-    for i in gv
-        n = osm.index_to_node[i]
-        w = osm.node_to_highway[n]
-        sizes[i] = length(w)
+function size_nodes(gpk, osm, sorted_edges, edge_width)
+    if haskey(gpk, :node_size)
+        return fill(gpk.node_size[], Graphs.nv(osm.graph)), nothing
+    else
+        if edge_width isa Vector
+            sizes = fill(0, Graphs.nv(osm.graph))
+            maxs = fill(0, Graphs.nv(osm.graph))
+            for i in eachindex(sizes)
+                # get indices for each connected edge of current vertex
+                edge_indices = findall(x -> first(x) == i, sorted_edges)
+                if !isempty(edge_indices)
+                    # set vertex size to max width of connected edges and save its edge index
+                    sizes[i], m = findmax(edge_width[ei] for ei in edge_indices)
+                    maxs[i] = edge_indices[m]
+                end
+            end
+            return sizes, maxs
+        else
+            return edge_width, nothing
+        end
     end
-
-    return sizes
 end
+
+function color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
+    if haskey(gpk, :node_color)
+        return fill(gpk.node_color[], Graphs.nv(osm.graph))
+    else
+        if edge_color isa Vector
+            colors = fill(colorant"#444", Graphs.nv(osm.graph))
+            # set vertex color to color of connected edge with max width
+            if !isnothing(maxs) # use maxs if previously filled in size_nodes
+                for i in eachindex(maxs)
+                    if !iszero(maxs[i])
+                        colors[i] = edge_color[maxs[i]]
+                    end
+                end
+            else # similar procedure to size_nodes
+                for i in eachindex(colors)
+                    edge_indices = findall(x -> first(x) == i, sorted_edges)
+                    if !isempty(edge_indices)
+                        _, m = findmax(edge_width[ei] for ei in edge_indices)
+                        colors[i] = edge_color[m]
+                    end
+                end
+            end
+            return colors
+        else
+            return edge_color
+        end
+    end
+end
+
 
 function show_nlabels(gpk, hide_nlabels, osm)
     labels = if hide_nlabels
         nothing
     else
-        haskey(gpk, :nlabels) ? gpk.nlabels : repr.(keys(osm.nodes))
+        haskey(gpk, :nlabels) ? gpk.nlabels[] : repr.(keys(osm.nodes))
     end
 
     return labels
@@ -89,7 +131,7 @@ end
 
 function color_streets(gpk, i2w)
     if haskey(gpk, :edge_color)
-        return gpk.edge_color
+        return fill(gpk.edge_color[], length(i2w))
     else
         colors = fill(colorant"#444", length(i2w))
 
@@ -106,7 +148,7 @@ end
 
 function width_streets(gpk, i2w)
     if haskey(gpk, :edge_width)
-        return gpk.edge_width
+        return fill(gpk.edge_width[],  length(i2w))
     else
         widths = fill(BASEWIDTH, length(i2w))
 
@@ -153,7 +195,7 @@ function show_elabels(gpk, hide_elabels, sorted_edges, n2i, ways)
     labels = if hide_elabels
         nothing
     else
-        haskey(gpk, :elabels) ? gpk.elabels : label_streets(sorted_edges, n2i, ways)
+        haskey(gpk, :elabels) ? gpk.elabels[] : label_streets(sorted_edges, n2i, ways)
     end
     return labels
 end
