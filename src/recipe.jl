@@ -21,7 +21,7 @@ Define OSMPlot plotting function with some attribute defaults.
 `buildings::Union{Dict{Integer, LightOSM.Building}, Nothing} = nothing` : Buildings polygons
     are plotted if this is not nothing.
 `buildingskwargs::NamedTuple = (; )` : All kwargs are passed on to `Makie.poly` and will
-    overwrite the defaults provided by 
+    overwrite the default plotting behaviour
 `inspect_nodes::Bool = false` : Enables/disables inspection of OpenStreetMap nodes.
 `inspect_edges::Bool = true` : Enables/disables inspection of OpenStreetMap ways.
 """
@@ -68,7 +68,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     edge_defaults = set_edge_defaults(osmplot)
     node_defaults = set_node_defaults(osmplot, edge_defaults.edge_width, edge_defaults.edge_color)
 
-    # If user provided buildings, plot them as polys
+    # If user provided buildings, plot them as polys below ways layer
     if !isnothing(osmplot.buildings[])
         building_polys = @lift(get_building_polys($(osmplot.buildings)))
         bp = poly!(osmplot, building_polys; 
@@ -76,7 +76,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
         bp.inspectable[] = false # Disable building inspection for now
     end
 
-    # Create the graphplot
+    # Create the ways layer as a graphplot
     # User-provided graphplotkwargs will overwrite defaults
     gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
