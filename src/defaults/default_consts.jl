@@ -9,9 +9,9 @@ BASEWIDTH = 1
 # areas on the map. This specifically affects all roads which are white or light grey in 
 # OSM standard style, e.g. "residential" and "tertiary". #444 was chosen in these cases.
 WAYTYPECOLORS = Dict{String, Colorant}(
+    # TODO: roads and link roads should have thin outlines in darker colour
+    #       currently impossible with linesegments, Makie feature request is open    
     # roads
-    # TODO: roads should have thin outlines in darker colour
-    #       currently impossible with linesegments, Makie feature request is open
     "motorway" => colorant"#EB7D54",
     "trunk" => colorant"#E27272",
     "primary" => colorant"#E892A2",
@@ -20,8 +20,6 @@ WAYTYPECOLORS = Dict{String, Colorant}(
     "unclassified" => colorant"#444",
     "residential" => colorant"#444",
     # link roads
-    # TODO: link roads should have thin outlines in darker colour
-    #       currently impossible with linesegments, Makie feature request is open
     "motorway_link" => colorant"#EB7D54",
     "trunk_link" => colorant"#E27272",
     "primary_link" => colorant"#E892A2",

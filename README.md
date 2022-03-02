@@ -6,7 +6,9 @@ It makes heavy use of the [GraphMakie](https://github.com/JuliaPlots/GraphMakie.
 Please note that this recipe provides some opinionated (but hopefully sane) defaults for how the OpenStreetMap data should be plotted.
 However, users have full control over every aspect of the plot and can style them to their likings.
 
-## Usage example
+## Example
+
+### Basic usage
 
 ```julia
 using LightOSM
@@ -30,14 +32,14 @@ osm = graph_from_file("london_drive.json";
 )
 
 # plot it
-fig, ax, plot = osmplot(osm)
-ax.aspect = DataAspect()
-display(fig)
+fig, ax, plot = osmplot(osm; axis = (; aspect = DataAspect()))
 ```
 
 Output:
 
 ![London map](https://github.com/fbanning/OSMMakie-assets/blob/master/London.png)
+
+### Inspection
 
 To enable edge inspection:
 
@@ -49,14 +51,47 @@ Output:
 
 ![London map with inspection enabled](https://github.com/fbanning/OSMMakie-assets/blob/master/London_inspection.png)
 
-Markersize of nodes is set to zero by default, preventing inspection.
-A `node_size` has to be provided to enable node inspection.
+Inspection of nodes is disabled by default.
+Set `inspect_nodes` to `true` to enable it.
 
 ```julia
-fig, ax, plot = osmplot(osm; graphplotkwargs=(; node_size = 1))
+fig, ax, plot = osmplot(osm; inspect_nodes = true)
 ax.aspect = DataAspect()
 DataInspector(fig)
 ```
+
+### Buildings
+
+Buildings polygons can also be added to the plot:
+
+```julia
+download_osm_buildings(:bbox;
+    minlat = 51.5015,
+    minlon = -0.0921,
+    maxlat = 51.5154,
+    maxlon = -0.0662,
+    metadata = true,
+    download_format = :osm,
+    save_to_file_location = "london_buildings.osm",
+);
+
+# load as Buildings Dict
+
+buildings = buildings_from_file("london_buildings.osm");
+
+# plot London map with buildings
+
+fig = Figure()
+ax = fig[1,1] = Axis(fig; 
+    limits = ((-0.0921, -0.0662), (51.5015, 51.5154)),
+    aspect = DataAspect()
+)
+plot = osmplot!(osm; buildings)
+```
+
+Output:
+
+![London map with buildings layer](https://github.com/fbanning/OSMMakie-assets/blob/master/London_buildings.png)
 
 ## Contributions
 
