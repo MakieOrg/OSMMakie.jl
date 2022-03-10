@@ -223,7 +223,7 @@ end
 function get_building_polys(buildings)
     building_polys = Polygon[]
 
-    for (i, (id, b)) in enumerate(buildings)
+    for b in values(buildings)
         polys = Vector{Point2f}[]
         for bp in b.polygons
             poly = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
