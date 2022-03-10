@@ -4,7 +4,6 @@ authors = ["Frederik Banning <frederik.banning@ruhr-uni-bochum.de>"]
 version = "0.0.4"
 
 [deps]
-GeometryBasics = "5c1252a2-5f33-56bf-86c9-59e7332b4326"
 GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
 Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
 LightOSM = "d1922b25-af4e-4ba3-84af-fe9bea896051"

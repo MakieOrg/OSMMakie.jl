@@ -221,7 +221,7 @@ end
 ##########################################################################################
 
 function get_building_polys(buildings)
-    building_polys = GeometryBasics.Polygon[]
+    building_polys = Polygon[]
 
     for (i, (id, b)) in enumerate(buildings)
         polys = Vector{Point2f}[]
@@ -229,7 +229,7 @@ function get_building_polys(buildings)
             poly = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
             push!(polys, poly)
         end
-        push!(building_polys, GeometryBasics.Polygon(polys[1], polys[2:end])) 
+        push!(building_polys, Polygon(polys[1], polys[2:end])) 
     end
     
     return building_polys
