@@ -72,7 +72,9 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     if !isnothing(osmplot.buildings[])
         building_polys = @lift(get_building_polys($(osmplot.buildings)))
         bp = poly!(osmplot, building_polys; 
-            color = BUILDINGSCOLORS, osmplot.buildingskwargs...)
+            color = BUILDINGSCOLORS,
+            strokecolor = colorant"#444", strokewidth = 0.5,
+            osmplot.buildingskwargs...)
         bp.inspectable[] = false # Disable building inspection for now
     end
 
