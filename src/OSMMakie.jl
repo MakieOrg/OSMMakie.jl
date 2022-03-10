@@ -5,6 +5,7 @@ using GraphMakie
 using Graphs
 using Makie
 using Makie.Colors
+using Makie.GeometryBasics
 
 include("recipe.jl")
 include("defaults/defaults.jl")

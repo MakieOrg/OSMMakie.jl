@@ -221,14 +221,15 @@ end
 ##########################################################################################
 
 function get_building_polys(buildings)
-    building_polys = fill(Point2f[], length(buildings));
-    
-    for (i, (id, b)) in enumerate(buildings)
+    building_polys = Polygon[]
+
+    for b in values(buildings)
+        pntsvec = Vector{Point2f}[]
         for bp in b.polygons
-            building_polys[i] = begin
-                Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
-            end
+            pnts = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
+            push!(pntsvec, pnts)
         end
+        push!(building_polys, Polygon(pntsvec[1], pntsvec[2:end])) 
     end
     
     return building_polys
