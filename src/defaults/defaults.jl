@@ -224,12 +224,12 @@ function get_building_polys(buildings)
     building_polys = Polygon[]
 
     for b in values(buildings)
-        polys = Vector{Point2f}[]
+        pntsvec = Vector{Point2f}[]
         for bp in b.polygons
-            poly = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
-            push!(polys, poly)
+            pnts = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
+            push!(pntsvec, pnts)
         end
-        push!(building_polys, Polygon(polys[1], polys[2:end])) 
+        push!(building_polys, Polygon(pntsvec[1], pntsvec[2:end])) 
     end
     
     return building_polys
