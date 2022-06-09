@@ -1,7 +1,7 @@
 using Test
 using OSMMakie
 using OSMMakie.LightOSM
-using GLMakie
+using CairoMakie
 using StatsBase
 
 ## Get data
