@@ -41,8 +41,12 @@ buildings = buildings_from_download(:bbox;
         true
     end
 
-    # wrong recipe usage
-    @test_throws MethodError osmplot(; osm)
+    # wrong recipe usage, for whatever reasons this is different between 1.6 and latest
+    if VERSION.major == 1 && VERSION.minor <= 6
+        @test_throws ArgumentError osmplot(; osm)
+    else
+        @test_throws MethodError osmplot(; osm)
+    end
 
     @test begin # recipe with buildings and limits/autolimitaspect keywords
         fig = Figure()
