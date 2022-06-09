@@ -54,7 +54,13 @@ function size_nodes(gpk, osm, sorted_edges, edge_width)
                 edge_indices = findall(x -> first(x) == i, sorted_edges)
                 if !isempty(edge_indices)
                     # set vertex size to max width of connected edges and save its edge index
-                    sizes[i], m = findmax(edge_width[ei] for ei in edge_indices)
+                    if VERSION.major == 1 && VERSION.minor <= 6
+                        # need to discriminate by version because findmax is only available
+                        # from Julia 1.7 onwards
+                        # do things
+                    else
+                        sizes[i], m = findmax(edge_width[ei] for ei in edge_indices)
+                    end
                     maxs[i] = edge_indices[m]
                 end
             end
@@ -82,7 +88,11 @@ function color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
                 for i in eachindex(colors)
                     edge_indices = findall(x -> first(x) == i, sorted_edges)
                     if !isempty(edge_indices)
-                        _, m = findmax(edge_width[ei] for ei in edge_indices)
+                        if VERSION.major == 1 && VERSION.minor <= 6
+                            # do things
+                        else
+                            _, m = findmax(edge_width[ei] for ei in edge_indices)
+                        end
                         colors[i] = edge_color[m]
                     end
                 end
@@ -93,7 +103,6 @@ function color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
         end
     end
 end
-
 
 function show_nlabels(gpk, hide_nlabels, osm)
     labels = if hide_nlabels
