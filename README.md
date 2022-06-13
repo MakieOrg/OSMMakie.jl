@@ -15,12 +15,15 @@ using LightOSM
 using OSMMakie
 using GLMakie
 
+# define area boundaries
+area = (
+    minlat = 51.5015, minlon = -0.0921, # bottom left corner
+    maxlat = 51.5154, maxlon = -0.0662 # top right corner
+)
+
 # download OpenStreetMap data
 download_osm_network(:bbox; # rectangular area
-    minlat = 51.5015, # bottom left corner
-    minlon = -0.0921,
-    maxlat = 51.5154, # top right corner
-    maxlon = -0.0662,
+    area..., # splat previously defined area boundaries
     network_type = :drive, # download motorways
     save_to_file_location = "london_drive.json"
 );
@@ -31,8 +34,11 @@ osm = graph_from_file("london_drive.json";
     weight_type = :distance
 )
 
+# use min and max latitude to calculate approximate aspect ratio for map projection
+autolimitaspect = map_aspect(area.minlat, area.maxlat)
+
 # plot it
-fig, ax, plot = osmplot(osm; axis = (; aspect = DataAspect()))
+fig, ax, plot = osmplot(osm; axis = (; autolimitaspect))
 ```
 
 Output:
@@ -65,26 +71,22 @@ DataInspector(fig)
 Buildings polygons can also be added to the plot:
 
 ```julia
+# download OpenStreetMap buildings data
 download_osm_buildings(:bbox;
-    minlat = 51.5015,
-    minlon = -0.0921,
-    maxlat = 51.5154,
-    maxlon = -0.0662,
+    area...,
     metadata = true,
     download_format = :osm,
     save_to_file_location = "london_buildings.osm",
 );
 
 # load as Buildings Dict
-
 buildings = buildings_from_file("london_buildings.osm");
 
-# plot London map with buildings
-
+# plot London map with buildings, also directly provide limits for the plot
 fig = Figure()
 ax = fig[1,1] = Axis(fig; 
-    limits = ((-0.0921, -0.0662), (51.5015, 51.5154)),
-    aspect = DataAspect()
+    limits = ((area.minlon, area.maxlon), (area.minlat, area.maxlat)),
+    autolimitaspect
 )
 plot = osmplot!(osm; buildings)
 ```
