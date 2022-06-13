@@ -10,5 +10,6 @@ using Makie.GeometryBasics
 include("recipe.jl")
 include("defaults/defaults.jl")
 include("inspection.jl")
+include("utils.jl")
 
 end # module
