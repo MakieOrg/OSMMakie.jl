@@ -51,11 +51,11 @@ function size_nodes(gpk, osm, sorted_edges, edge_width)
             maxs = fill(0, Graphs.nv(osm.graph))
             for i in eachindex(sizes)
                 # get indices for each connected edge of current vertex
-                edge_indices = findall(x -> first(x) == i, sorted_edges)
-                if !isempty(edge_indices)
+                edge_ids = findall(x -> first(x) == i, sorted_edges)
+                if !isempty(edge_ids)
                     # set vertex size to max width of connected edges and save its edge index
-                    sizes[i], m = findmax(edge_width[ei] for ei in edge_indices)
-                    maxs[i] = edge_indices[m]
+                    sizes[i], m = OSMMakie.findmax(edge_width, edge_ids)
+                    maxs[i] = edge_ids[m]
                 end
             end
             return sizes, maxs
@@ -80,9 +80,9 @@ function color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
                 end
             else # similar procedure to size_nodes
                 for i in eachindex(colors)
-                    edge_indices = findall(x -> first(x) == i, sorted_edges)
-                    if !isempty(edge_indices)
-                        _, m = findmax(edge_width[ei] for ei in edge_indices)
+                    edge_ids = findall(x -> first(x) == i, sorted_edges)
+                    if !isempty(edge_ids)
+                        _, m = OSMMakie.findmax(edge_width, edge_ids)
                         colors[i] = edge_color[m]
                     end
                 end
@@ -94,6 +94,7 @@ function color_nodes(gpk, osm, edge_color, maxs, sorted_edges, edge_width)
     end
 end
 
+findmax(attr, v) = maximum((attr[ei], i) for (i, ei) in enumerate(v))
 
 function show_nlabels(gpk, hide_nlabels, osm)
     labels = if hide_nlabels
