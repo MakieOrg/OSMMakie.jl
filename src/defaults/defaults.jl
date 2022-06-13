@@ -116,7 +116,7 @@ function set_edge_defaults(osmplot)
     i2w = osmplot.index_to_way[]
     sorted_edges = osmplot.sorted_edges[]
     n2i = osm.node_to_index
-    ways = osm.highways
+    ways = osm.ways
 
     edge_color = color_streets(gpk, i2w)
     edge_width = width_streets(gpk, i2w)
