@@ -64,7 +64,7 @@ function Makie.show_data(inspector::DataInspector,
     # Without plot.index_to_way:
     # i1, i2 = plot.sorted_edges[][idx÷2]
     # n1, n2 = osm.index_to_node[i1], osm.index_to_node[i2]
-    # way = osm.edge_to_highway[[n1, n2]]
+    # way = osm.edge_to_way[[n1, n2]]
 
     # With plot.index_to_way:
     way = plot.index_to_way[][idx÷2]
