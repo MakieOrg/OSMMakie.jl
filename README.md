@@ -82,8 +82,9 @@ download_osm_buildings(:bbox;
 # load as Buildings Dict
 buildings = buildings_from_file("london_buildings.osm");
 
-# plot London map with buildings, also directly provide limits for the plot
-fig = Figure()
+# plot London map with buildings
+# also directly provide a figure resolution and limits for the plot
+fig = Figure(; resolution = (1000,900))
 ax = fig[1,1] = Axis(fig; 
     limits = ((area.minlon, area.maxlon), (area.minlat, area.maxlat)),
     autolimitaspect
