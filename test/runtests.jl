@@ -3,29 +3,20 @@ using OSMMakie
 using OSMMakie.LightOSM
 using CairoMakie
 using StatsBase
+using Downloads
 
 ## Get data
 
 # download OpenStreetMap data and load as OSMGraph
-osm = graph_from_download(:bbox; # rectangular area
-    minlat = 51.5015, # bottom left corner
-    minlon = -0.0921,
-    maxlat = 51.5154, # top right corner
-    maxlon = -0.0662,
-    network_type = :drive, # download motorways
+london_drive = download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_drive.json", "./london_drive.json")
+osm = graph_from_file(london_drive;
     graph_type = :light, # SimpleDiGraph
     weight_type = :distance
 )
 
 # download OpenStreetMap buildings and load as buildings dict
-buildings = buildings_from_download(:bbox;
-    minlat = 51.5015, # bottom left corner
-    minlon = -0.0921,
-    maxlat = 51.5154, # top right corner
-    maxlon = -0.0662,
-    metadata = true,
-    download_format = :osm,
-);
+london_buildings = download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_buildings.osm", "./london_buildings.osm")
+buildings = buildings_from_file(london_buildings);
 
 ## Tests
 
