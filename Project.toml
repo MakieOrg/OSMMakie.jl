@@ -1,5 +1,6 @@
 name = "OSMMakie"
 uuid = "76b6901f-8821-46bb-9129-841bc9cfe677"
+repo = "https://github.com/MakieOrg/OSMMakie.jl"
 authors = ["Frederik Banning <frederik.banning@ruhr-uni-bochum.de>"]
 version = "0.0.5"
 
