@@ -8,14 +8,14 @@ using Downloads
 ## Get data
 
 # download OpenStreetMap data and load as OSMGraph
-london_drive = download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_drive.json", "./london_drive.json")
+london_drive = Downloads.download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_drive.json", "./london_drive.json")
 osm = graph_from_file(london_drive;
     graph_type = :light, # SimpleDiGraph
     weight_type = :distance
 )
 
 # download OpenStreetMap buildings and load as buildings dict
-london_buildings = download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_buildings.osm", "./london_buildings.osm")
+london_buildings = Downloads.download("https://raw.githubusercontent.com/fbanning/OSMMakie-assets/master/london_buildings.osm", "./london_buildings.osm")
 buildings = buildings_from_file(london_buildings);
 
 ## Tests
