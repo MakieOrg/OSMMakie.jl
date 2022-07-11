@@ -8,7 +8,7 @@ BASEWIDTH = 1
 # They are modified to work with a white background because we don't have any buildings and
 # areas on the map. This specifically affects all roads which are white or light grey in 
 # OSM standard style, e.g. "residential" and "tertiary". #444 was chosen in these cases.
-WAYTYPECOLORS = Dict{String, Colorant}(
+WAYTYPECOLORS = Dict{String, Any}(
     # TODO: roads and link roads should have thin outlines in darker colour
     #       currently impossible with linesegments, Makie feature request is open    
     # roads
