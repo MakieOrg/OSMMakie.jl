@@ -36,7 +36,7 @@ buildings = buildings_from_file(london_buildings);
     if get(ENV, "CI", nothing) == "true"
         @test_throws ArgumentError osmplot(; osm)
     else
-        @test_throws MethodError osmplot(; osm)
+        @test_throws Makie.PlotMethodError osmplot(; osm)
     end
 
     @test begin # recipe with buildings and limits/autolimitaspect keywords
