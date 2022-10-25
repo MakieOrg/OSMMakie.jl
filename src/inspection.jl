@@ -15,9 +15,6 @@ function Makie.show_data(inspector::DataInspector,
     node = osm.nodes[osm.index_to_node[idx]]
     a.text[] = node2string(node)
     ms = source.markersize[][idx]
-#    a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* ms .- Vec2f(5), Vec2f(ms) .+ Vec2f(10))
-#    a._px_bbox_visible[] = true
-#    a._bbox_visible[] = false
     a.visible[] = true
     a.range = 1
     a.textsize = 13
@@ -70,9 +67,6 @@ function Makie.show_data(inspector::DataInspector,
     way = plot.index_to_way[][idx÷2]
 
     a.text[] = edge2string(way)
-#    a._bbox2D[] = Rect2f(proj_pos .- 0.5 .* lw .- Vec2f(5), Vec2f(lw) .+ Vec2f(10))
-#    a._px_bbox_visible[] = true
-#    a._bbox_visible[] = false
     a.visible[] = true
     a.range = 1
     a.textsize = 13
