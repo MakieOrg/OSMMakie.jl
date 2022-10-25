@@ -32,12 +32,8 @@ buildings = buildings_from_file(london_buildings);
         true
     end
 
-    # wrong recipe usage, for whatever reasons this is different between CI and local
-    if get(ENV, "CI", nothing) == "true"
-        @test_throws ArgumentError osmplot(; osm)
-    else
-        @test_throws MethodError osmplot(; osm)
-    end
+    # wrong recipe usage
+    @test_throws Makie.PlotMethodError osmplot(; osm)
 
     @test begin # recipe with buildings and limits/autolimitaspect keywords
         fig = Figure()
