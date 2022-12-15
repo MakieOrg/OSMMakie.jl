@@ -17,7 +17,7 @@ function Makie.show_data(inspector::DataInspector,
     ms = source.markersize[][idx]
     a.visible[] = true
     a.range = 1
-    a.textsize = 13
+    a.fontsize = 13
 
     return true
 end
@@ -69,7 +69,7 @@ function Makie.show_data(inspector::DataInspector,
     a.text[] = edge2string(way)
     a.visible[] = true
     a.range = 1
-    a.textsize = 13
+    a.fontsize = 13
 
     return true
 end

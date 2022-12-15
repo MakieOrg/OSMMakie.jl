@@ -2,7 +2,7 @@ name = "OSMMakie"
 uuid = "76b6901f-8821-46bb-9129-841bc9cfe677"
 repo = "https://github.com/MakieOrg/OSMMakie.jl"
 authors = ["Frederik Banning <frederik.banning@ruhr-uni-bochum.de>"]
-version = "0.0.6"
+version = "0.0.7"
 
 [deps]
 GraphMakie = "1ecd5474-83a3-4783-bb4f-06765db800d2"
@@ -12,7 +12,7 @@ Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 
 [compat]
 julia = "1.6"
-GraphMakie = "0.4"
+GraphMakie = "0.5"
 Graphs = "1.5"
 LightOSM = "0.2"
-Makie = "0.18"
+Makie = "0.19"
