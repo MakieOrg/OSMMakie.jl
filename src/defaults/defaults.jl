@@ -126,8 +126,9 @@ function set_edge_defaults(osmplot)
         markersize = arrows_streets(gpk, i2w, edge_width),
         color = :white
     )
+    edge_plottype = :linesegments
 
-    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_attr)
+    return (; edge_color, edge_width, elabels, elabels_textsize, arrow_attr, edge_plottype)
 end
 
 function color_streets(gpk, i2w)
