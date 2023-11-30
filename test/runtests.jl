@@ -33,7 +33,7 @@ buildings = buildings_from_file(london_buildings);
     end
 
     # wrong recipe usage
-    @test_throws Makie.PlotMethodError osmplot(; osm)
+    @test_throws ErrorException osmplot(; osm)
 
     @test begin # recipe with buildings and limits/autolimitaspect keywords
         fig = Figure()
