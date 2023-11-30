@@ -1,3 +1,4 @@
 *.json
+*.osm
 Manifest.toml
 *.code-workspace
