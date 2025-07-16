@@ -80,8 +80,10 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
 
     # Create the ways layer as a graphplot
     # User-provided graphplotkwargs will overwrite defaults
+    waypoints = get_waypoints(osm)
     gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
+        waypoints,
         osmplot.graphplotkwargs...,
         node_defaults...,
         edge_defaults...
