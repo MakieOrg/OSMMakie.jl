@@ -44,8 +44,7 @@ end
 # Edge inspection on mouse hover
 ##########################################################################################
 
-function Makie.show_data(inspector::DataInspector,
-    plot::OSMPlot{<:Tuple{<:OSMGraph}}, idx, source::LineSegments)
+function Makie.show_data(inspector::DataInspector, plot::OSMPlot{<:Tuple{<:OSMGraph}}, idx, source::LineSegments)
     osm = plot.osm[]
     a = inspector.plot.attributes
     scene = Makie.parent_scene(plot)

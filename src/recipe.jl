@@ -13,7 +13,7 @@ Define OSMPlot plotting function with some attribute defaults.
 
 ## Keyword arguments
 
-`graphplotkwargs::NamedTuple = (; )` : All kwargs are passed on to `GraphMakie.graphplot!`. 
+`graphplotkwargs::NamedTuple = (; )` : All kwargs are passed on to `GraphMakie.graphplot!`.
     All kwargs that work with graphplot will also work here (see [GraphMakie docs](https://juliaplots.org/GraphMakie.jl/stable/#The-graphplot-Recipe) for reference).
     Extending the defaults can be done by providing `graphplotkwargs = (; kwargs...)`.
 `hide_elabels::Bool = false` : Show or hide edge labels.
@@ -27,13 +27,13 @@ Define OSMPlot plotting function with some attribute defaults.
 """
 @recipe(OSMPlot, osm) do scene
     Attributes(
-        # general    
+        # general
         graphplotkwargs = NamedTuple(),
         hide_elabels = true,
         hide_nlabels = true,
         buildings = nothing,
         buildingskwargs = NamedTuple(),
-        
+
         # inspection
         inspect_nodes = false,
         inspect_edges = true,
@@ -60,7 +60,7 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     )
 
     # Node positions
-    # OSMGraph.node_coordinates is in lat/lon format. Reversing it provides lon/lat 
+    # OSMGraph.node_coordinates is in lat/lon format. Reversing it provides lon/lat
     # which then creates standard north-oriented maps.
     node_pos = Point2.(reverse.(osm.node_coordinates))
 
@@ -71,29 +71,34 @@ function Makie.plot!(osmplot::OSMPlot{<:Tuple{<:OSMGraph}})
     # If user provided buildings, plot them as polys below ways layer
     if !isnothing(osmplot.buildings[])
         building_polys = @lift(get_building_polys($(osmplot.buildings)))
-        bp = poly!(osmplot, building_polys; 
+        bp = poly!(osmplot, building_polys;
             color = BUILDINGSCOLORS,
             strokecolor = colorant"#444", strokewidth = 0.5,
-            osmplot.buildingskwargs...)
-        bp.inspectable[] = false # Disable building inspection for now
+            osmplot.buildingskwargs[]...
+        )
+        bp.inspectable = false # Disable building inspection for now
     end
 
     # Create the ways layer as a graphplot
     # User-provided graphplotkwargs will overwrite defaults
     gp = graphplot!(osmplot, osm.graph;
         layout = _ -> node_pos,
-        osmplot.graphplotkwargs...,
+        force_straight_edges = true,
+        osmplot.graphplotkwargs[]...,
         node_defaults...,
         edge_defaults...
     )
-    
-    # Setup inspection on mouse hover
-    # Tracks inspect_edges for ways
-    gp.plots[1].plots[1].inspectable = lift(identity, osmplot.inspect_edges)
-    # Always disabled for one-way arrows
+    # # Setup inspection on mouse hover
+    # # Tracks inspect_edges for ways
+    on(osmplot.inspect_edges; update=true) do inspect
+        gp.plots[1].inspectable = inspect
+    end
+    # # Always disabled for one-way arrows
     gp.plots[2].inspectable[] = false
-    # Tracks inspect_nodes for nodes
-    gp.plots[3].inspectable = lift(identity, osmplot.inspect_nodes)
+    # # Tracks inspect_nodes for nodes
+    on(osmplot.inspect_nodes; update=true) do inspect
+        gp.plots[3].inspectable = inspect
+    end
 
     return osmplot
 end
