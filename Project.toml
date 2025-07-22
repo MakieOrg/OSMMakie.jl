@@ -11,8 +11,8 @@ LightOSM = "d1922b25-af4e-4ba3-84af-fe9bea896051"
 Makie = "ee78f7c6-11fb-53f2-987a-cfe4a2b5a57a"
 
 [compat]
-julia = "1.6"
-GraphMakie = "0.5"
+julia = "1.10"
+GraphMakie = "0.6.1"
 Graphs = "1.5"
 LightOSM = "0.2, 0.3"
-Makie = "0.20, 0.21, 0.22, 0.23, 0.24"
+Makie = "0.24"

@@ -20,18 +20,18 @@ end
 
 #=
 It would be nicer to just use the function above but NamedTuples are automatically converted
-to Attributes, which are not a subtype of AbstractObservable. Hence we cannot lift from 
+to Attributes, which are not a subtype of AbstractObservable. Hence we cannot lift from
 them. Finding a workaround to this would allow for better reactivity of the plot attributes.
-So far everything I've tried was unsuccessful. Maybe at some point I will be smarter or the 
+So far everything I've tried was unsuccessful. Maybe at some point I will be smarter or the
 underlying system will have changed.
 
-Anyways, the following workaround has to suffice for now although it only results in 
+Anyways, the following workaround has to suffice for now although it only results in
 static plots. The user has to recreate the plots to reflect any changes of graphplotkwargs.
 =#
 
 function set_node_defaults(osmplot, edge_width, edge_color)
     osm = osmplot.osm[]
-    gpk = osmplot.graphplotkwargs
+    gpk = osmplot.graphplotkwargs[]
     sorted_edges = osmplot.sorted_edges[]
 
     node_size, maxs = size_nodes(gpk, osm, sorted_edges, edge_width)
@@ -112,7 +112,7 @@ end
 
 function set_edge_defaults(osmplot)
     osm = osmplot.osm[]
-    gpk = osmplot.graphplotkwargs
+    gpk = osmplot.graphplotkwargs[]
     i2w = osmplot.index_to_way[]
     sorted_edges = osmplot.sorted_edges[]
     n2i = osm.node_to_index
@@ -173,7 +173,7 @@ function label_streets(sorted_edges, n2i, ways)
         if haskey(way.tags, "name")
             node_indices = begin
                 l = length(way.nodes)
-                if l == 2 # pick first two nodes of a way 
+                if l == 2 # pick first two nodes of a way
                     n1 = 1
                     n2 = 2
                 elseif iseven(l) # pick middle node and the next one
@@ -231,8 +231,8 @@ function get_building_polys(buildings)
             pnts = Point2f[(node.location.lon, node.location.lat) for node in bp.nodes]
             push!(pntsvec, pnts)
         end
-        push!(building_polys, Polygon(pntsvec[1], pntsvec[2:end])) 
+        push!(building_polys, Polygon(pntsvec[1], pntsvec[2:end]))
     end
-    
+
     return building_polys
 end

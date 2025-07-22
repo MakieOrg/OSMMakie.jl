@@ -33,11 +33,11 @@ buildings = buildings_from_file(london_buildings);
     end
 
     # wrong recipe usage
-    @test_throws ErrorException osmplot(; osm)
+    @test_throws ArgumentError osmplot(; osm)
 
     @test begin # recipe with buildings and limits/autolimitaspect keywords
         fig = Figure()
-        ax = fig[1,1] = Axis(fig; 
+        ax = fig[1,1] = Axis(fig;
             limits = ((-0.0921, -0.0662), (51.5015, 51.5154)),
             autolimitaspect = 1 + abs(mean([51.5015, 51.5154])) / 90
         )
